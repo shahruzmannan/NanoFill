@@ -106,11 +106,11 @@ button:hover {
 }
 
 #customFieldsContainer input {
-  flex: 2;
+  flex: 4; /* Make the input fields larger */
   margin-left: 10px;
 }
 
-#customFieldsContainer button {
+#customFieldsContainer .delete-button {
   margin-left: 10px;
   background-color: #ff4d4d;
   color: white;
@@ -119,8 +119,10 @@ button:hover {
   cursor: pointer;
   padding: 5px;
   flex: 0 0 50px; /* Make the delete button smaller */
+  font-size: 12px; /* Make the font size smaller */
+  height: 30px; /* Set a fixed height for the delete button */
 }
 
-#customFieldsContainer button:hover {
+#customFieldsContainer .delete-button:hover {
   background-color: #ff1a1a;
 }

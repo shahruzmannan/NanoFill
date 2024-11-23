@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.type = 'button';
+        deleteButton.className = 'delete-button'; // Add class for styling
         deleteButton.addEventListener('click', function() {
           customFieldsContainer.removeChild(fieldDiv);
           saveCustomFields();
@@ -100,10 +101,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       });
     }
     if (data.resumeHandle) {
-      const resumeHandle = await getFileHandle(data.resumeHandle);
-      if (resumeHandle) {
-        document.getElementById('resumeStatus').textContent = 'Resume/CV is saved.';
-      }
+      document.getElementById('resumeStatus').textContent = 'Resume/CV is saved.';
     }
   });
 });
@@ -202,8 +200,7 @@ document.getElementById('resume').addEventListener('change', async function(even
     const writableStream = await fileHandle.createWritable();
     await writableStream.write(file);
     await writableStream.close();
-    const resumeHandle = await getFileHandle(fileHandle);
-    chrome.storage.sync.set({ resumeHandle: resumeHandle }, function() {
+    chrome.storage.sync.set({ resumeHandle: fileHandle }, function() {
       document.getElementById('resumeStatus').textContent = 'Resume/CV is saved.';
       alert('Resume/CV saved');
     });
@@ -226,6 +223,9 @@ document.getElementById('addCustomField').addEventListener('click', function() {
   const deleteButton = document.createElement('button');
   deleteButton.textContent = 'Delete';
   deleteButton.type = 'button';
+  deleteButton.className = 'delete-button'; // Add class for styling
+  deleteButton.style.width = '50px'; // Ensure the delete button is smaller
+  deleteButton.style.height = '30px'; // Ensure the delete button is smaller
   deleteButton.addEventListener('click', function() {
     customFieldsContainer.removeChild(fieldDiv);
     saveCustomFields();
@@ -257,14 +257,4 @@ function saveCustomFields() {
   chrome.storage.sync.set({ customFields: customFields }, function() {
     alert('Custom fields saved');
   });
-}
-
-async function getFileHandle(handle) {
-  try {
-    const fileHandle = await handle.getFile();
-    return fileHandle;
-  } catch (error) {
-    console.error('Error accessing file handle:', error);
-    return null;
-  }
 }

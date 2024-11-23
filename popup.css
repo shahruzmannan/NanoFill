@@ -1,120 +1,137 @@
 /* Make popup wider and adaptive */
- body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
-    width: 400px; /* Increased width */
-    max-width: 100%; /* Responsive */
-    height: auto;
-    overflow-y: auto;
-  }
-  
-  /* Header with aligned buttons */
-  .header {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 8px;
-    gap: 8px; /* Space between buttons */
-    margin-bottom: 16px;
-  }
-  
-  /* Settings and Info buttons */
-  #settings-button, #info-button {
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: var(--md-color-secondary, #6750A4);
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background-color 0.3s ease;
-  }
-  
-  #settings-button:hover, #info-button:hover {
-    background-color: rgba(103, 80, 164, 0.1);
-  }
-  
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  width: 400px; /* Increased width */
+  max-width: 100%; /* Responsive */
+  height: auto;
+  overflow-y: auto;
+}
+
+/* Header with aligned buttons */
+.header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 8px;
+  gap: 8px; /* Space between buttons */
+  margin-bottom: 16px;
+}
+
+/* Settings and Info buttons */
+#settings-button, #info-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--md-color-secondary, #6750A4);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+#settings-button:hover, #info-button:hover {
+  background-color: rgba(103, 80, 164, 0.1);
+}
+
 /* Profile List Styling */
 .profile-list {
-    list-style: none;
-    padding: 16px;
-    margin: 0;
-  }
-  
-  /* Profile List Item Styling */
-  .profile-list li {
-    display: flex;
-    flex-direction: column;
-    gap: 8px; /* Space between elements */
-    padding: 16px;
-    margin-bottom: 12px;
-    background-color: var(--md-color-surface, #ffffff);
-    border-radius: 12px;
-    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.24);
-    transition: box-shadow 0.3s ease;
-  }
-  
-  .profile-list li:hover {
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.32);
-  }
-  
-  /* Header Row: Name + Apply Button */
-  .profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--md-color-on-surface, #333333);
-  }
-  
-  /* Profile Description */
-  .profile-description {
-    font-size: 14px;
-    color: var(--md-color-on-surface-variant, #666666);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-height: 3em; /* Approx. 2 lines of text */
-    line-height: 1.5em;
-    transition: max-height 0.3s ease;
-  }
-  
-  .profile-description.expanded {
-    max-height: none; /* Fully display the description */
-    text-overflow: unset;
-  }
-  
-  /* "More" Button Styling */
-  .more-button {
-    background: none;
-    border: none;
-    color: var(--md-color-primary, #6750A4);
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0;
-    text-transform: uppercase;
-    margin-left: 4px;
-  }
-  
-  /* Apply Button */
-  .apply-button {
-    background-color: var(--md-color-primary, #6750A4);
-    color: var(--md-color-on-primary, #ffffff);
-    border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .apply-button:hover {
-    background-color: var(--md-color-primary-container, #D0BCFF);
-    transform: translateY(-1px);
-  }
-  
-  
+  list-style: none;
+  padding: 16px;
+  margin: 0;
+}
+
+/* Profile List Item Styling */
+.profile-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between elements */
+  padding: 16px;
+  margin-bottom: 12px;
+  background-color: var(--md-color-surface, #ffffff);
+  border-radius: 12px;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.12), 0px 1px 2px rgba(0, 0, 0, 0.24);
+  transition: box-shadow 0.3s ease;
+}
+
+.profile-list li:hover {
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.32);
+}
+
+/* Header Row: Name + Apply Button + Delete Button */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--md-color-on-surface, #333333);
+}
+
+/* Profile Description */
+.profile-description {
+  font-size: 14px;
+  color: var(--md-color-on-surface-variant, #666666);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 3em; /* Approx. 2 lines of text */
+  line-height: 1.5em;
+  transition: max-height 0.3s ease;
+}
+
+.profile-description.expanded {
+  max-height: none; /* Fully display the description */
+  text-overflow: unset;
+}
+
+/* "More" Button Styling */
+.more-button {
+  background: none;
+  border: none;
+  color: var(--md-color-primary, #6750A4);
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+  margin-left: 4px;
+}
+
+/* Apply Button */
+.apply-button {
+  background-color: var(--md-color-primary, #6750A4);
+  color: var(--md-color-on-primary, #ffffff);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.apply-button:hover {
+  background-color: var(--md-color-primary-container, #D0BCFF);
+  transform: translateY(-1px);
+}
+
+/* Delete Button */
+.delete-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 10px;
+}
+
+.delete-button:hover {
+  background-color: #ff1a1a;
+  transform: translateY(-1px);
+}
