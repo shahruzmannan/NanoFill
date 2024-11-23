@@ -1,3 +1,5 @@
+var profiles = []; // Define profiles in the global scope
+
 function openTab(evt, tabName) {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
@@ -12,249 +14,389 @@ function openTab(evt, tabName) {
   evt.currentTarget.className += " active";
 }
 
-// Set default tab to be open
-document.addEventListener('DOMContentLoaded', async function() {
-  var tablinks = document.getElementsByClassName('tablinks');
-  for (var i = 0; i < tablinks.length; i++) {
-    tablinks[i].addEventListener('click', function(event) {
-      openTab(event, this.getAttribute('data-tab'));
-    });
+function openProfile(evt, profileId) {
+  var i, profileContent, profileTabs;
+  profileContent = document.getElementsByClassName("profile-content");
+  for (i = 0; i < profileContent.length; i++) {
+    profileContent[i].style.display = "none";
   }
-  tablinks[0].click();
-
-  chrome.storage.sync.get(['jobFillProfile', 'educationProfile', 'workExperienceProfile', 'otherProfile', 'customFields', 'resumeHandle'], async function(data) {
-    if (data.jobFillProfile) {
-      document.getElementById('prefix').value = data.jobFillProfile.prefix;
-      document.getElementById('firstName').value = data.jobFillProfile.firstName;
-      document.getElementById('middleName').value = data.jobFillProfile.middleName;
-      document.getElementById('lastName').value = data.jobFillProfile.lastName;
-      document.getElementById('address').value = data.jobFillProfile.address;
-      document.getElementById('city').value = data.jobFillProfile.city;
-      document.getElementById('state').value = data.jobFillProfile.state;
-      document.getElementById('postalCode').value = data.jobFillProfile.postalCode;
-      document.getElementById('country').value = data.jobFillProfile.country;
-      document.getElementById('email').value = data.jobFillProfile.email;
-      document.getElementById('phone').value = data.jobFillProfile.phone;
-      document.getElementById('nationality').value = data.jobFillProfile.nationality;
-      document.getElementById('linkedin').value = data.jobFillProfile.linkedin;
-      document.getElementById('twitter').value = data.jobFillProfile.twitter;
-      document.getElementById('github').value = data.jobFillProfile.github;
-      document.getElementById('website').value = data.jobFillProfile.website;
-      document.getElementById('gender').value = data.jobFillProfile.gender;
-    }
-    if (data.educationProfile) {
-      document.getElementById('school').value = data.educationProfile.school;
-      document.getElementById('degree').value = data.educationProfile.degree;
-      document.getElementById('major').value = data.educationProfile.major;
-      document.getElementById('startDate').value = data.educationProfile.startDate;
-      document.getElementById('endDate').value = data.educationProfile.endDate;
-    }
-    if (data.workExperienceProfile) {
-      document.getElementById('company').value = data.workExperienceProfile.company;
-      document.getElementById('jobTitle').value = data.workExperienceProfile.jobTitle;
-      document.getElementById('workStartDate').value = data.workExperienceProfile.workStartDate;
-      document.getElementById('workEndDate').value = data.workExperienceProfile.workEndDate;
-      document.getElementById('description').value = data.workExperienceProfile.description;
-    }
-    if (data.otherProfile) {
-      document.getElementById('currentSalary').value = data.otherProfile.currentSalary;
-      document.getElementById('expectedSalary').value = data.otherProfile.expectedSalary;
-      document.getElementById('noticePeriod').value = data.otherProfile.noticePeriod;
-      document.getElementById('earliestAvailableDate').value = data.otherProfile.earliestAvailableDate;
-      document.getElementById('coverLetter').value = data.otherProfile.coverLetter;
-      document.getElementById('genderIdentity').value = data.otherProfile.genderIdentity;
-      document.getElementById('raceEthnicity').value = data.otherProfile.raceEthnicity;
-      document.getElementById('sexualOrientation').value = data.otherProfile.sexualOrientation;
-      document.getElementById('disabilityStatus').value = data.otherProfile.disabilityStatus;
-      document.getElementById('veteranStatus').value = data.otherProfile.veteranStatus;
-    }
-    if (data.customFields) {
-      const customFieldsContainer = document.getElementById('customFieldsContainer');
-      data.customFields.forEach((field, index) => {
-        const fieldDiv = document.createElement('div');
-        const nameLabel = document.createElement('label');
-        nameLabel.textContent = 'Field Name';
-        const nameInput = document.createElement('input');
-        nameInput.type = 'text';
-        nameInput.name = 'customFieldName';
-        nameInput.value = field.name || '';
-        const valueLabel = document.createElement('label');
-        valueLabel.textContent = 'Field Value';
-        const valueInput = document.createElement('input');
-        valueInput.type = 'text';
-        valueInput.name = 'customFieldValue';
-        valueInput.value = field.value || '';
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        deleteButton.type = 'button';
-        deleteButton.className = 'delete-button'; // Add class for styling
-        deleteButton.addEventListener('click', function() {
-          customFieldsContainer.removeChild(fieldDiv);
-          saveCustomFields();
-        });
-        fieldDiv.appendChild(nameLabel);
-        fieldDiv.appendChild(nameInput);
-        fieldDiv.appendChild(valueLabel);
-        fieldDiv.appendChild(valueInput);
-        fieldDiv.appendChild(deleteButton);
-        customFieldsContainer.appendChild(fieldDiv);
-      });
-    }
-    if (data.resumeHandle) {
-      document.getElementById('resumeStatus').textContent = 'Resume/CV is saved.';
-    }
-  });
-});
-
-document.getElementById('jobFillForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-
-  const formData = {
-    prefix: document.getElementById('prefix').value,
-    firstName: document.getElementById('firstName').value,
-    middleName: document.getElementById('middleName').value,
-    lastName: document.getElementById('lastName').value,
-    address: document.getElementById('address').value,
-    city: document.getElementById('city').value,
-    state: document.getElementById('state').value,
-    postalCode: document.getElementById('postalCode').value,
-    country: document.getElementById('country').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    nationality: document.getElementById('nationality').value,
-    linkedin: document.getElementById('linkedin').value,
-    twitter: document.getElementById('twitter').value,
-    github: document.getElementById('github').value,
-    website: document.getElementById('website').value,
-    gender: document.getElementById('gender').value
-  };
-
-  chrome.storage.sync.set({ jobFillProfile: formData }, function() {
-    alert('Settings saved');
-  });
-});
-
-document.getElementById('educationForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-
-  const educationData = {
-    school: document.getElementById('school').value,
-    degree: document.getElementById('degree').value,
-    major: document.getElementById('major').value,
-    startDate: document.getElementById('startDate').value,
-    endDate: document.getElementById('endDate').value
-  };
-
-  chrome.storage.sync.set({ educationProfile: educationData }, function() {
-    alert('Education saved');
-  });
-});
-
-document.getElementById('workExperienceForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-
-  const workExperienceData = {
-    company: document.getElementById('company').value,
-    jobTitle: document.getElementById('jobTitle').value,
-    workStartDate: document.getElementById('workStartDate').value,
-    workEndDate: document.getElementById('workEndDate').value,
-    description: document.getElementById('description').value
-  };
-
-  chrome.storage.sync.set({ workExperienceProfile: workExperienceData }, function() {
-    alert('Work Experience saved');
-  });
-});
-
-document.getElementById('otherForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-
-  const otherData = {
-    currentSalary: document.getElementById('currentSalary').value,
-    expectedSalary: document.getElementById('expectedSalary').value,
-    noticePeriod: document.getElementById('noticePeriod').value,
-    earliestAvailableDate: document.getElementById('earliestAvailableDate').value,
-    coverLetter: document.getElementById('coverLetter').value,
-    genderIdentity: document.getElementById('genderIdentity').value,
-    raceEthnicity: document.getElementById('raceEthnicity').value,
-    sexualOrientation: document.getElementById('sexualOrientation').value,
-    disabilityStatus: document.getElementById('disabilityStatus').value,
-    veteranStatus: document.getElementById('veteranStatus').value
-  };
-
-  chrome.storage.sync.set({ otherProfile: otherData }, function() {
-    alert('Other settings saved');
-  });
-});
-
-document.getElementById('resume').addEventListener('change', async function(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const fileHandle = await window.showSaveFilePicker({
-      suggestedName: file.name,
-      types: [{
-        description: 'PDF Files',
-        accept: { 'application/pdf': ['.pdf'] }
-      }]
-    });
-    const writableStream = await fileHandle.createWritable();
-    await writableStream.write(file);
-    await writableStream.close();
-    chrome.storage.sync.set({ resumeHandle: fileHandle }, function() {
-      document.getElementById('resumeStatus').textContent = 'Resume/CV is saved.';
-      alert('Resume/CV saved');
-    });
+  profileTabs = document.getElementsByClassName("profile-tab");
+  for (i = 0; i < profileTabs.length; i++) {
+    profileTabs[i].className = profileTabs[i].className.replace(" active", "");
   }
-});
+  document.getElementById(profileId).style.display = "block";
+  evt.currentTarget.className += " active";
+}
 
-document.getElementById('addCustomField').addEventListener('click', function() {
-  const customFieldsContainer = document.getElementById('customFieldsContainer');
-  const fieldDiv = document.createElement('div');
-  const nameLabel = document.createElement('label');
-  nameLabel.textContent = 'Field Name';
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.name = 'customFieldName';
-  const valueLabel = document.createElement('label');
-  valueLabel.textContent = 'Field Value';
-  const valueInput = document.createElement('input');
-  valueInput.type = 'text';
-  valueInput.name = 'customFieldValue';
-  const deleteButton = document.createElement('button');
-  deleteButton.textContent = 'Delete';
-  deleteButton.type = 'button';
-  deleteButton.className = 'delete-button'; // Add class for styling
-  deleteButton.style.width = '50px'; // Ensure the delete button is smaller
-  deleteButton.style.height = '30px'; // Ensure the delete button is smaller
-  deleteButton.addEventListener('click', function() {
-    customFieldsContainer.removeChild(fieldDiv);
-    saveCustomFields();
-  });
-  fieldDiv.appendChild(nameLabel);
-  fieldDiv.appendChild(nameInput);
-  fieldDiv.appendChild(valueLabel);
-  fieldDiv.appendChild(valueInput);
-  fieldDiv.appendChild(deleteButton);
-  customFieldsContainer.appendChild(fieldDiv);
-});
-
-document.getElementById('customForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-
-  saveCustomFields();
-});
-
-function saveCustomFields() {
-  const customFields = [];
-  const customFieldsContainer = document.getElementById('customFieldsContainer');
-  const customFieldDivs = customFieldsContainer.getElementsByTagName('div');
-  for (let i = 0; i < customFieldDivs.length; i++) {
-    const nameInput = customFieldDivs[i].getElementsByTagName('input')[0];
-    const valueInput = customFieldDivs[i].getElementsByTagName('input')[1];
-    customFields.push({ name: nameInput.value, value: valueInput.value });
+function saveProfileData(profileId, profileType) {
+  var profileIndex = profiles.findIndex(p => p.id === profileId);
+  var formElement = document.getElementById(`${profileType}Form_${profileId}`);
+  if (!formElement) {
+    console.error(`Form element with ID ${profileType}Form_${profileId} not found.`);
+    return;
   }
+  var formData = new FormData(formElement);
+  var profileData = {};
 
-  chrome.storage.sync.set({ customFields: customFields }, function() {
-    alert('Custom fields saved');
+  formData.forEach((value, key) => {
+    profileData[key] = value;
+  });
+
+  profiles[profileIndex][profileType] = profileData;
+  chrome.storage.sync.set({ profiles: profiles }, function() {
+    console.log(`${profileType} saved for profile ${profileId}`);
   });
 }
+
+function saveCustomFields(profileId) {
+  console.log(`Saving custom fields for profile ${profileId}`);
+  var profileIndex = profiles.findIndex(p => p.id === profileId);
+  var customFieldsContainer = document.getElementById(`customFieldsContainer_${profileId}`);
+  if (!customFieldsContainer) {
+    console.error(`Custom fields container with ID customFieldsContainer_${profileId} not found.`);
+    return;
+  }
+
+  var customFields = [];
+  var fieldDivs = customFieldsContainer.children;
+  for (var i = 0; i < fieldDivs.length; i++) {
+    var fieldDiv = fieldDivs[i];
+    var fieldName = fieldDiv.querySelector('input[name="customFieldName"]').value;
+    var fieldValue = fieldDiv.querySelector('input[name="customFieldValue"]').value;
+    customFields.push({ name: fieldName, value: fieldValue });
+  }
+
+  profiles[profileIndex].customFields = customFields;
+  chrome.storage.sync.set({ profiles: profiles }, function() {
+    console.log(`Custom fields saved for profile ${profileId}`);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+  var profileTabs = document.getElementById('profileTabs');
+  var profileContent = document.getElementById('profileContent');
+  var addProfileButton = document.getElementById('addProfileButton');
+
+  chrome.storage.sync.get(['profiles'], function(data) {
+    profiles = data.profiles || [];
+    profiles.forEach((profile, index) => {
+      addProfileTab(profile, index);
+      addProfileContent(profile, index);
+    });
+  });
+
+  addProfileButton.addEventListener('click', function() {
+    var newProfile = {
+      id: 'profile_' + Date.now(),
+      name: 'New Profile',
+      jobFillProfile: {},
+      educationProfile: {},
+      workExperienceProfile: {},
+      otherProfile: {},
+      customFields: []
+    };
+    addProfileTab(newProfile, profiles.length);
+    addProfileContent(newProfile, profiles.length);
+    profiles.push(newProfile);
+    chrome.storage.sync.set({ profiles: profiles });
+  });
+
+  function addProfileTab(profile, index) {
+    var tab = document.createElement('button');
+    tab.className = 'profile-tab';
+    tab.textContent = profile.name;
+    tab.setAttribute('data-profile', profile.id);
+    tab.addEventListener('click', function(event) {
+      openProfile(event, profile.id);
+    });
+    profileTabs.appendChild(tab);
+  }
+
+  function addProfileContent(profile, index) {
+    var content = document.createElement('div');
+    content.className = 'profile-content';
+    content.id = profile.id;
+    content.innerHTML = `
+      <div class="tab">
+        <button class="tablinks" data-tab="PersonalInfo_${profile.id}">Personal Information</button>
+        <button class="tablinks" data-tab="Education_${profile.id}">Education</button>
+        <button class="tablinks" data-tab="WorkExperience_${profile.id}">Work Experience</button>
+        <button class="tablinks" data-tab="Other_${profile.id}">Other</button>
+        <button class="tablinks" data-tab="Custom_${profile.id}">Custom</button>
+      </div>
+      <div id="PersonalInfo_${profile.id}" class="tabcontent">
+        <form id="jobFillProfileForm_${profile.id}">
+          <div>
+            <label for="prefix_${profile.id}">Prefix</label>
+            <select id="prefix_${profile.id}" name="prefix">
+              <option value="Mr">Mr</option>
+              <option value="Mrs">Mrs</option>
+              <option value="Miss">Miss</option>
+              <option value="Ms">Ms</option>
+              <option value="Mx">Mx</option>
+              <option value="Sir">Sir</option>
+              <option value="Dame">Dame</option>
+              <option value="Dr">Dr</option>
+              <option value="Cllr">Cllr</option>
+              <option value="Lady">Lady</option>
+            </select>
+          </div>
+          <div>
+            <label for="firstName_${profile.id}">First Name</label>
+            <input type="text" id="firstName_${profile.id}" name="firstName" value="${profile.jobFillProfile.firstName || ''}">
+          </div>
+          <div>
+            <label for="middleName_${profile.id}">Middle Name</label>
+            <input type="text" id="middleName_${profile.id}" name="middleName" value="${profile.jobFillProfile.middleName || ''}">
+          </div>
+          <div>
+            <label for="lastName_${profile.id}">Last Name</label>
+            <input type="text" id="lastName_${profile.id}" name="lastName" value="${profile.jobFillProfile.lastName || ''}">
+          </div>
+          <div>
+            <label for="address_${profile.id}">Address</label>
+            <input type="text" id="address_${profile.id}" name="address" value="${profile.jobFillProfile.address || ''}">
+          </div>
+          <div>
+            <label for="city_${profile.id}">City</label>
+            <input type="text" id="city_${profile.id}" name="city" value="${profile.jobFillProfile.city || ''}">
+          </div>
+          <div>
+            <label for="state_${profile.id}">State</label>
+            <input type="text" id="state_${profile.id}" name="state" value="${profile.jobFillProfile.state || ''}">
+          </div>
+          <div>
+            <label for="postalCode_${profile.id}">Postal Code</label>
+            <input type="text" id="postalCode_${profile.id}" name="postalCode" value="${profile.jobFillProfile.postalCode || ''}">
+          </div>
+          <div>
+            <label for="country_${profile.id}">Country</label>
+            <input type="text" id="country_${profile.id}" name="country" value="${profile.jobFillProfile.country || ''}">
+          </div>
+          <div>
+            <label for="email_${profile.id}">Email</label>
+            <input type="email" id="email_${profile.id}" name="email" value="${profile.jobFillProfile.email || ''}">
+          </div>
+          <div>
+            <label for="phone_${profile.id}">Phone</label>
+            <input type="tel" id="phone_${profile.id}" name="phone" value="${profile.jobFillProfile.phone || ''}">
+          </div>
+          <div>
+            <label for="nationality_${profile.id}">Nationality</label>
+            <input type="text" id="nationality_${profile.id}" name="nationality" value="${profile.jobFillProfile.nationality || ''}">
+          </div>
+          <div>
+            <label for="linkedin_${profile.id}">LinkedIn</label>
+            <input type="url" id="linkedin_${profile.id}" name="linkedin" value="${profile.jobFillProfile.linkedin || ''}">
+          </div>
+          <div>
+            <label for="twitter_${profile.id}">Twitter</label>
+            <input type="url" id="twitter_${profile.id}" name="twitter" value="${profile.jobFillProfile.twitter || ''}">
+          </div>
+          <div>
+            <label for="github_${profile.id}">GitHub</label>
+            <input type="url" id="github_${profile.id}" name="github" value="${profile.jobFillProfile.github || ''}">
+          </div>
+          <div>
+            <label for="website_${profile.id}">Website</label>
+            <input type="url" id="website_${profile.id}" name="website" value="${profile.jobFillProfile.website || ''}">
+          </div>
+          <div>
+            <label for="gender_${profile.id}">Gender</label>
+            <input type="text" id="gender_${profile.id}" name="gender" value="${profile.jobFillProfile.gender || ''}">
+          </div>
+          <button type="submit" id="saveSettings_${profile.id}">Save Settings</button>
+        </form>
+      </div>
+      <div id="Education_${profile.id}" class="tabcontent">
+        <form id="educationProfileForm_${profile.id}">
+          <div>
+            <label for="school_${profile.id}">School or Institution</label>
+            <input type="text" id="school_${profile.id}" name="school" value="${profile.educationProfile.school || ''}">
+          </div>
+          <div>
+            <label for="degree_${profile.id}">Degree</label>
+            <input type="text" id="degree_${profile.id}" name="degree" value="${profile.educationProfile.degree || ''}">
+          </div>
+          <div>
+            <label for="major_${profile.id}">Major</label>
+            <input type="text" id="major_${profile.id}" name="major" value="${profile.educationProfile.major || ''}">
+          </div>
+          <div>
+            <label for="startDate_${profile.id}">Start Date</label>
+            <input type="date" id="startDate_${profile.id}" name="startDate" value="${profile.educationProfile.startDate || ''}">
+          </div>
+          <div>
+            <label for="endDate_${profile.id}">End Date</label>
+            <input type="date" id="endDate_${profile.id}" name="endDate" value="${profile.educationProfile.endDate || ''}">
+          </div>
+          <button type="submit" id="saveEducation_${profile.id}">Save Education</button>
+        </form>
+      </div>
+      <div id="WorkExperience_${profile.id}" class="tabcontent">
+        <form id="workExperienceProfileForm_${profile.id}">
+          <div>
+            <label for="company_${profile.id}">Company</label>
+            <input type="text" id="company_${profile.id}" name="company" value="${profile.workExperienceProfile.company || ''}">
+          </div>
+          <div>
+            <label for="jobTitle_${profile.id}">Job Title</label>
+            <input type="text" id="jobTitle_${profile.id}" name="jobTitle" value="${profile.workExperienceProfile.jobTitle || ''}">
+          </div>
+          <div>
+            <label for="workStartDate_${profile.id}">Start Date</label>
+            <input type="date" id="workStartDate_${profile.id}" name="workStartDate" value="${profile.workExperienceProfile.workStartDate || ''}">
+          </div>
+          <div>
+            <label for="workEndDate_${profile.id}">End Date</label>
+            <input type="date" id="workEndDate_${profile.id}" name="workEndDate" value="${profile.workExperienceProfile.workEndDate || ''}">
+          </div>
+          <div>
+            <label for="description_${profile.id}">Description</label>
+            <textarea id="description_${profile.id}" name="description">${profile.workExperienceProfile.description || ''}</textarea>
+          </div>
+          <button type="submit" id="saveWorkExperience_${profile.id}">Save Work Experience</button>
+        </form>
+      </div>
+      <div id="Other_${profile.id}" class="tabcontent">
+        <form id="otherProfileForm_${profile.id}">
+          <div>
+            <label for="currentSalary_${profile.id}">Current Salary</label>
+            <input type="text" id="currentSalary_${profile.id}" name="currentSalary" value="${profile.otherProfile.currentSalary || ''}">
+          </div>
+          <div>
+            <label for="expectedSalary_${profile.id}">Expected Salary</label>
+            <input type="text" id="expectedSalary_${profile.id}" name="expectedSalary" value="${profile.otherProfile.expectedSalary || ''}">
+          </div>
+          <div>
+            <label for="noticePeriod_${profile.id}">Notice Period</label>
+            <input type="text" id="noticePeriod_${profile.id}" name="noticePeriod" value="${profile.otherProfile.noticePeriod || ''}">
+          </div>
+          <div>
+            <label for="earliestAvailableDate_${profile.id}">Earliest Available Date</label>
+            <input type="date" id="earliestAvailableDate_${profile.id}" name="earliestAvailableDate" value="${profile.otherProfile.earliestAvailableDate || ''}">
+          </div>
+          <div>
+            <label for="coverLetter_${profile.id}">Cover Letter</label>
+            <textarea id="coverLetter_${profile.id}" name="coverLetter" rows="10">${profile.otherProfile.coverLetter || ''}</textarea>
+          </div>
+          <div>
+            <label for="genderIdentity_${profile.id}">Gender Identity</label>
+            <input type="text" id="genderIdentity_${profile.id}" name="genderIdentity" value="${profile.otherProfile.genderIdentity || ''}">
+          </div>
+          <div>
+            <label for="raceEthnicity_${profile.id}">Race/Ethnicity</label>
+            <input type="text" id="raceEthnicity_${profile.id}" name="raceEthnicity" value="${profile.otherProfile.raceEthnicity || ''}">
+          </div>
+          <div>
+            <label for="sexualOrientation_${profile.id}">Sexual Orientation</label>
+            <input type="text" id="sexualOrientation_${profile.id}" name="sexualOrientation" value="${profile.otherProfile.sexualOrientation || ''}">
+          </div>
+          <div>
+            <label for="disabilityStatus_${profile.id}">Disability Status</label>
+            <input type="text" id="disabilityStatus_${profile.id}" name="disabilityStatus" value="${profile.otherProfile.disabilityStatus || ''}">
+          </div>
+          <div>
+            <label for="veteranStatus_${profile.id}">Veteran Status</label>
+            <input type="text" id="veteranStatus_${profile.id}" name="veteranStatus" value="${profile.otherProfile.veteranStatus || ''}">
+          </div>
+          <div>
+            <label for="resume_${profile.id}">Resume/CV</label>
+            <input type="file" id="resume_${profile.id}" name="resume" accept="application/pdf">
+            <div id="resumeStatus_${profile.id}"></div> <!-- Display the status of the resume -->
+          </div>
+          <button type="submit" id="saveOther_${profile.id}">Save Other</button>
+        </form>
+      </div>
+      <div id="Custom_${profile.id}" class="tabcontent">
+        <form id="customFieldsForm_${profile.id}">
+          <div id="customFieldsContainer_${profile.id}"></div>
+          <button type="button" id="addCustomField_${profile.id}">Add Custom Field</button>
+          <button type="submit" id="saveCustom_${profile.id}">Save Custom</button>
+        </form>
+      </div>
+    `;
+    profileContent.appendChild(content);
+  
+    // Add event listeners for form submissions and custom field additions
+    const jobFillForm = document.getElementById(`jobFillProfileForm_${profile.id}`);
+    if (jobFillForm) {
+      jobFillForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        saveProfileData(profile.id, 'jobFillProfile');
+      });
+    }
+  
+    const educationForm = document.getElementById(`educationProfileForm_${profile.id}`);
+    if (educationForm) {
+      educationForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        saveProfileData(profile.id, 'educationProfile');
+      });
+    }
+  
+    const workExperienceForm = document.getElementById(`workExperienceProfileForm_${profile.id}`);
+    if (workExperienceForm) {
+      workExperienceForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        saveProfileData(profile.id, 'workExperienceProfile');
+      });
+    }
+  
+    const otherForm = document.getElementById(`otherProfileForm_${profile.id}`);
+    if (otherForm) {
+      otherForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        saveProfileData(profile.id, 'otherProfile');
+      });
+    }
+  
+    const customForm = document.getElementById(`customFieldsForm_${profile.id}`);
+    if (customForm) {
+      customForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        saveCustomFields(profile.id);
+      });
+    }
+  
+    const addCustomFieldButton = document.getElementById(`addCustomField_${profile.id}`);
+if (addCustomFieldButton) {
+  addCustomFieldButton.addEventListener('click', function() {
+    var customFieldsContainer = document.getElementById(`customFieldsContainer_${profile.id}`);
+    var fieldDiv = document.createElement('div');
+    var nameLabel = document.createElement('label');
+    nameLabel.textContent = 'Field Name';
+    var nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.name = 'customFieldName';
+    var valueLabel = document.createElement('label');
+    valueLabel.textContent = 'Field Value';
+    var valueInput = document.createElement('input');
+    valueInput.type = 'text';
+    valueInput.name = 'customFieldValue';
+    var deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.type = 'button';
+    deleteButton.className = 'delete-button';
+    deleteButton.addEventListener('click', function() {
+      customFieldsContainer.removeChild(fieldDiv);
+      saveCustomFields(profile.id);
+    });
+    fieldDiv.appendChild(nameLabel);
+    fieldDiv.appendChild(nameInput);
+    fieldDiv.appendChild(valueLabel);
+    fieldDiv.appendChild(valueInput);
+    fieldDiv.appendChild(deleteButton);
+    customFieldsContainer.appendChild(fieldDiv);
+  });
+}
+  
+    // Add event listeners for the tabs
+    var tablinks = content.getElementsByClassName('tablinks');
+    for (var i = 0; i < tablinks.length; i++) {
+      tablinks[i].addEventListener('click', function(event) {
+        openTab(event, this.getAttribute('data-tab'));
+      });
+    }
+  }
+});

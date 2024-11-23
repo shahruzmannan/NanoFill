@@ -10,6 +10,42 @@ h1 {
   color: #333;
 }
 
+.profile-tabs {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid #3a85cf;
+  margin-bottom: 20px;
+}
+
+.profile-tab {
+  background-color: inherit;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+  flex: 1;
+  text-align: center;
+  color: black;
+}
+
+.profile-tab:hover {
+  background-color: #ddd;
+}
+
+.profile-tab.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.profile-content {
+  display: none;
+  padding: 20px;
+  border: 1px solid #0e0101;
+  border-top: none;
+}
+
 .tab {
   overflow: hidden;
   border-bottom: 1px solid #3a85cf;
@@ -28,7 +64,7 @@ h1 {
   font-size: 17px;
   flex: 1;
   text-align: center;
-  color: black; /* Set text color to black */
+  color: black;
 }
 
 .tab button:hover {
@@ -37,7 +73,7 @@ h1 {
 
 .tab button.active {
   background-color: #007bff;
-  color: white; /* Set text color to white when active */
+  color: white;
 }
 
 .tabcontent {
@@ -125,4 +161,25 @@ button:hover {
 
 #customFieldsContainer .delete-button:hover {
   background-color: #ff1a1a;
+}
+
+.add-profile-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-profile-button:hover {
+  background-color: #218838;
 }

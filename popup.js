@@ -2,23 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const profileList = document.getElementById("profile-list");
 
   // Fetch profiles from Chrome Storage
-  chrome.storage.sync.get(['jobFillProfile', 'educationProfile', 'workExperienceProfile', 'otherProfile', 'customFields'], function(data) {
-    const profiles = [];
-
-    // Combine all profiles into one
-    const combinedProfile = {
-      id: 'combinedProfile',
-      name: "Combined Profile",
-      description: JSON.stringify({
-        jobFillProfile: data.jobFillProfile || {},
-        educationProfile: data.educationProfile || {},
-        workExperienceProfile: data.workExperienceProfile || {},
-        otherProfile: data.otherProfile || {},
-        customFields: data.customFields || []
-      }, null, 2)
-    };
-
-    profiles.push(combinedProfile);
+  chrome.storage.sync.get(['profiles'], function(data) {
+    const profiles = data.profiles || [];
 
     profiles.forEach((profile) => {
       const listItem = document.createElement("li");
@@ -44,7 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
         profileList.removeChild(listItem);
 
         // Remove profile from Chrome Storage
-        chrome.storage.sync.remove(['jobFillProfile', 'educationProfile', 'workExperienceProfile', 'otherProfile', 'customFields'], function() {
+        const updatedProfiles = profiles.filter(p => p.id !== profile.id);
+        chrome.storage.sync.set({ profiles: updatedProfiles }, function() {
           console.log(`Profile ${profile.name} deleted`);
         });
       });
@@ -55,12 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // Profile Description
       const descriptionWrapper = document.createElement("div");
       const profileDescription = document.createElement("pre"); // Use <pre> to preserve formatting
-      profileDescription.textContent = profile.description;
+      profileDescription.textContent = JSON.stringify(profile, null, 2);
       profileDescription.className = "profile-description";
       descriptionWrapper.appendChild(profileDescription);
 
       // "More" Button
-      if (profile.description.length > 100) {
+      if (profileDescription.textContent.length > 100) {
         const moreButton = document.createElement("button");
         moreButton.textContent = "More";
         moreButton.className = "more-button";
