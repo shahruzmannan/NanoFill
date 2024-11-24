@@ -7,19 +7,46 @@ document.addEventListener("DOMContentLoaded", () => {
 
     profiles.forEach((profile) => {
       const listItem = document.createElement("li");
+      listItem.className = "profile-item";
 
       // Header Row: Profile Name, Apply Button, and Delete Button
       const header = document.createElement("div");
       header.className = "profile-header";
 
-      const profileName = document.createElement("div");
+      const profileName = document.createElement("span");
       profileName.textContent = profile.name;
+      profileName.className = "profile-name";
       header.appendChild(profileName);
+
+      // Profile Description
+      const descriptionWrapper = document.createElement("div");
+      descriptionWrapper.className = "profile-description-wrapper";
+
+      const profileDescription = document.createElement("div");
+      profileDescription.className = "profile-description";
+
+      // Add profile details in a readable format
+      const details = `
+        <p><strong>First Name:</strong> ${profile.jobFillProfile.firstName || ''}</p>
+        <p><strong>Last Name:</strong> ${profile.jobFillProfile.lastName || ''}</p>
+        <p><strong>Email:</strong> ${profile.jobFillProfile.email || ''}</p>
+        <p><strong>Phone:</strong> ${profile.jobFillProfile.phone || ''}</p>
+        <p><strong>LinkedIn:</strong> ${profile.jobFillProfile.linkedin || ''}</p>
+        <p><strong>GitHub:</strong> ${profile.jobFillProfile.github || ''}</p>
+      `;
+      profileDescription.innerHTML = details;
+      descriptionWrapper.appendChild(profileDescription);
+      header.appendChild(descriptionWrapper);
+
+      listItem.appendChild(header);
+
+      const actions = document.createElement("div");
+      actions.className = "profile-actions";
 
       const applyButton = document.createElement("button");
       applyButton.textContent = "Apply";
       applyButton.className = "apply-button";
-      header.appendChild(applyButton);
+      actions.appendChild(applyButton);
 
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "Delete";
@@ -34,32 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log(`Profile ${profile.name} deleted`);
         });
       });
-      header.appendChild(deleteButton);
+      actions.appendChild(deleteButton);
 
-      listItem.appendChild(header);
+      listItem.appendChild(actions);
 
-      // Profile Description
-      const descriptionWrapper = document.createElement("div");
-      const profileDescription = document.createElement("pre"); // Use <pre> to preserve formatting
-      profileDescription.textContent = JSON.stringify(profile, null, 2);
-      profileDescription.className = "profile-description";
-      descriptionWrapper.appendChild(profileDescription);
-
-      // "More" Button
-      if (profileDescription.textContent.length > 100) {
-        const moreButton = document.createElement("button");
-        moreButton.textContent = "More";
-        moreButton.className = "more-button";
-
-        moreButton.addEventListener("click", () => {
-          const isExpanded = profileDescription.classList.toggle("expanded");
-          moreButton.textContent = isExpanded ? "Less" : "More";
-        });
-
-        descriptionWrapper.appendChild(moreButton);
-      }
-
-      listItem.appendChild(descriptionWrapper);
       profileList.appendChild(listItem);
     });
   });
@@ -75,10 +80,3 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show additional info or help dialog
   });
 });
-
-// Optional dynamic theming support
-document.documentElement.style.setProperty("--md-color-primary", "#6750A4");
-document.documentElement.style.setProperty("--md-color-on-primary", "#ffffff");
-document.documentElement.style.setProperty("--md-color-primary-container", "#D0BCFF");
-document.documentElement.style.setProperty("--md-color-surface", "#ffffff");
-document.documentElement.style.setProperty("--md-color-secondary", "#6750A4");

@@ -180,6 +180,12 @@ button:hover {
   justify-content: center;
 }
 
+.profile-tab-input {
+  display: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .add-profile-button:hover {
   background-color: #218838;
 }
