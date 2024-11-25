@@ -61,6 +61,7 @@ const createPopupAction = (input) => {
         ${profileOptions}
       </select>
       <button class="popup-action-button" id="action-clear">Clear</button>
+      <button class="popup-action-button" id="action-fill">Fill</button>
     `;
     
     // Append the popup-action to the body
@@ -72,29 +73,18 @@ const createPopupAction = (input) => {
     const popupHeight = popupAction.offsetHeight;
     
     popupAction.style.position = 'absolute';
-    popupAction.style.top = `${inputRect.top + window.scrollY + inputRect.height + 8}px`; // 8px gap from the input
+    popupAction.style.top = `${inputRect.top + window.scrollY + inputRect.height}px`; // TODO: fix positioning so that our popup moves as the site scrolls (it should be a child of the input field)
     popupAction.style.left = `${inputRect.left + window.scrollX + (inputRect.width / 2) - (popupWidth / 2)}px`; // Centered
 
     // Handle profile selection
     const profileSelect = popupAction.querySelector('.popup-action-select');
-    profileSelect.addEventListener('change', function() {
+    profileSelect.addEventListener('change', function() { // TODO: I (xvade) don't think we should have the profile switcher in the popup, and regardless we shouldn't fill anything upon switching profiles
       const selectedProfileId = this.value;
       const selectedProfile = profiles.find(profile => profile.id === selectedProfileId);
       if (selectedProfile) {
         autofillInputFields(selectedProfile);
       }
     });
-  });
-};
-
-// Function to autofill input fields with selected profile data
-const autofillInputFields = (profile) => {
-  const autofillInputs = detectAutofillFields();
-  autofillInputs.forEach(input => {
-    const name = input.getAttribute('name');
-    if (name && profile.jobFillProfile[name]) {
-      input.value = profile.jobFillProfile[name];
-    }
   });
 };
 
@@ -106,11 +96,22 @@ const removePopupAction = () => {
   }
 };
 
-valid_responses = "username, first_name, last_name, full_name, phone_number, state, address_line_one"
+// Asks the background (nano_util.js) for the AI's opinion on the input
+async function getAIOpinion(input) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ type: "QUERRY", message: input.outerHTML}, (response) => {
+      console.log("Response from background:", response);
+      resolve(response.reply);
+    });
+  });
+}
+
+// The list of labels that Nano is allowed to output
+// TODO: generate this automatically from profile data
+valid_responses = "address, city, country, email, firstName, gender, lastName"
 
 chrome.runtime.sendMessage({ type: "UPDATE", message: valid_responses}, (response) => {
   console.log("Response from background:", response);
-  aiSuggestions[input] = response;
 });
 
 // Add event listeners for detecting clicks on autofill fields and get the AI's opinion on them
@@ -118,11 +119,17 @@ const autofillInputs = detectAutofillFields();
 let aiSuggestions = {};
 
 autofillInputs.forEach((input) => {
-  console.log(input);
-  chrome.runtime.sendMessage({ type: "QUERRY", message: input.outerHTML}, (response) => {
-    console.log("Response from background:", response);
-    aiSuggestions[input] = response;
+  getAIOpinion(input).then(aiOpinion => {
+    // TODO: add proper management of the active profile and move this segment to a more appropriate section once one exists
+    chrome.storage.sync.get(['profiles'], function(data) {
+      const profiles = data.profiles || [];
+      const currentProfile = profiles[0]
+      input.value = currentProfile.jobFillProfile[aiOpinion.split(':', 1)];
+      console.log(currentProfile);
+    });
+    // TODO: end of segment
   });
+  console.log(input);
   input.addEventListener('click', () => {
     // Remove any existing popup-action before showing a new one
     removePopupAction();
@@ -133,7 +140,7 @@ autofillInputs.forEach((input) => {
 });
 
 // Optional: You can handle popup-action button clicks here
-document.body.addEventListener('click', (event) => {
+document.body.addEventListener('click', (event) => { //TODO: this should be on focus, not on click (accessibility)
   if (event.target.classList.contains('popup-action-button')) {
     const action = event.target.id;
     if (action === 'action-clear') {
@@ -145,7 +152,7 @@ document.body.addEventListener('click', (event) => {
   }
 
   // Close the popup-action if clicking outside the popup-action or input field
-  if (!event.target.closest('.popup-action') && !event.target.closest('input')) {
+  if (!event.target.closest('.popup-action') && !event.target.closest('input')) { // TODO: you should be able to click anywhere on the page, not just on valid html
     removePopupAction();
   }
 });

@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const actions = document.createElement("div");
       actions.className = "profile-actions";
 
-      const applyButton = document.createElement("button");
+      const applyButton = document.createElement("button"); // TODO: buttons should do something
       applyButton.textContent = "Apply";
       applyButton.className = "apply-button";
       actions.appendChild(applyButton);

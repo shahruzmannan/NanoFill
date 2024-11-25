@@ -3,6 +3,9 @@
     "name": "NanoFill",
     "version": "1.0",
     "description": "Gemini Nano powered alternative to Google Autofill",
+    "background": {
+      "service_worker": "nano_util.js"
+    },
     "action": {
       "default_popup": "popup.html",
       "default_icon": {
@@ -18,7 +21,11 @@
     }],
     "permissions": [
         "storage",
-        "activeTab"
+        "activeTab",
+        "aiLanguageModelOriginTrial"
+    ],
+    "trial_tokens" : [
+      "AgvvO6n5F3FAz0ZXqTKKQbMpgNvyqhn1Y/w2/UsSykEMe6anIvgh4scvdAdBTmrcSvE4OjAmAwCOmO2hY9ddqAIAAAB4eyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vb3BiaWFtZGFlY2phY2lraGhiamlob25jcGdvYmJoamkiLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElGb3JFeHRlbnNpb24iLCJleHBpcnkiOjE3NjA0ODYzOTl9"
     ]
   }
   
