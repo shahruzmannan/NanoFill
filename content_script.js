@@ -106,10 +106,23 @@ const removePopupAction = () => {
   }
 };
 
-// Add event listeners for detecting clicks on autofill fields
+valid_responses = "username, first_name, last_name, full_name, phone_number, state, address_line_one"
+
+chrome.runtime.sendMessage({ type: "UPDATE", message: valid_responses}, (response) => {
+  console.log("Response from background:", response);
+  aiSuggestions[input] = response;
+});
+
+// Add event listeners for detecting clicks on autofill fields and get the AI's opinion on them
 const autofillInputs = detectAutofillFields();
+let aiSuggestions = {};
 
 autofillInputs.forEach((input) => {
+  console.log(input);
+  chrome.runtime.sendMessage({ type: "QUERRY", message: input.outerHTML}, (response) => {
+    console.log("Response from background:", response);
+    aiSuggestions[input] = response;
+  });
   input.addEventListener('click', () => {
     // Remove any existing popup-action before showing a new one
     removePopupAction();
