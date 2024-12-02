@@ -235,7 +235,6 @@ const autofillInputs = detectAutofillFields();
 let aiSuggestions = {};
 
 function autofill(profile) {
-  chrome.storage.sync.set({'active_profile': profile}) // TEMP LINE, REMOVE THIS ONCE IT EXISTS ELSEWHERE
   autofillInputs.forEach(input => {
     getAIOpinion(input).then(aiOpinion => {
       input.value = profile[aiOpinion.split(':', 1)];
