@@ -65,6 +65,7 @@ function openTab(evt, tabName) {
 }
 
 function openProfile(evt, profile) {
+	console.log(profile);
 	var i, profileContent, profileTabs;
 	profileContent = document.getElementsByClassName("profile-content");
 	for (i = 0; i < profileContent.length; i++) {
@@ -119,14 +120,21 @@ function saveProfileData(profileId, profileType) {
 		);
 		return;
 	}
-	var formData = new FormData(formElement);
-	var profileData = {};
 
+	var formData = new FormData(formElement);
+	var flattenedProfileData = {};
+
+	// Add form fields to the flat object
 	formData.forEach((value, key) => {
-		profileData[key] = value;
+		flattenedProfileData[key] = value;
 	});
 
-	profiles[profileIndex][profileType] = profileData;
+	// Merge new data into the existing profile, flattening it
+	profiles[profileIndex] = {
+		...profiles[profileIndex],
+		...flattenedProfileData,
+	};
+
 	if (profileType === "jobFillProfile") {
 		var jobProfileNameValue = document.getElementById(
 			`profileName_${profileId}`
@@ -169,20 +177,40 @@ function saveCustomFields(profileId) {
 		return;
 	}
 
-	var customFields = [];
+	var newCustomFields = [];
 	var fieldDivs = customFieldsContainer.children;
+
+	// Loop through all field divs to collect updated custom fields
 	for (var i = 0; i < fieldDivs.length; i++) {
 		var fieldDiv = fieldDivs[i];
-		var fieldName = fieldDiv.querySelector(
-			'input[name="customFieldName"]'
-		).value;
-		var fieldValue = fieldDiv.querySelector(
-			'input[name="customFieldValue"]'
-		).value;
-		customFields.push({ name: fieldName, value: fieldValue });
+		var fieldName = fieldDiv
+			.querySelector('input[name="customFieldName"]')
+			.value.trim();
+		var fieldValue = fieldDiv
+			.querySelector('input[name="customFieldValue"]')
+			.value.trim();
+
+		if (fieldName) {
+			newCustomFields.push({ name: fieldName, value: fieldValue });
+		}
 	}
 
-	profiles[profileIndex].customFields = customFields;
+	// Clear all existing custom fields and flat fields
+	var currentProfile = profiles[profileIndex];
+	currentProfile.customFields.forEach((field) => {
+		if (field.name in currentProfile) {
+			delete currentProfile[field.name];
+		}
+	});
+
+	// Add new custom fields to the profile object
+	newCustomFields.forEach((field) => {
+		currentProfile[field.name] = field.value; // Flat field
+	});
+
+	// Update the customFields array
+	currentProfile.customFields = newCustomFields;
+
 	chrome.storage.sync.set({ profiles: profiles }, function () {
 		console.log(`Custom fields saved for profile ${profileId}`);
 	});
@@ -702,11 +730,26 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 			deleteButton.addEventListener(
 				"click",
-				(function (currentFieldDiv) {
+				(function (currentFieldDiv, fieldIndex) {
 					return function () {
+						// Remove from DOM
 						customFieldsContainer.removeChild(currentFieldDiv);
+
+						// Remove from customFields array
+						profile.customFields.splice(fieldIndex, 1);
+
+						// Remove individual flat field from profile object
+						var fieldName = nameInput.value.trim(); // Get the field name
+						if (fieldName in profile) {
+							delete profile[fieldName];
+						}
+
+						// Update in storage
+						chrome.storage.sync.set({ profiles }, function () {
+							console.log(`Custom field "${fieldName}" deleted.`);
+						});
 					};
-				})(fieldDiv)
+				})(fieldDiv, i) // Pass the fieldDiv and the current index
 			);
 
 			fieldDiv.appendChild(labelNameDiv);
