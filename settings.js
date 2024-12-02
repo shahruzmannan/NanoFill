@@ -124,7 +124,11 @@ function saveProfileData(profileId, profileType) {
 	var formData = new FormData(formElement);
 
 	formData.forEach((value, key) => {
-		profiles[profileIndex].profileData[key] = value;
+		if (key !== "profileDescription" && key !== "profileName") {
+			profiles[profileIndex].profileData[key] = value;
+		} else {
+			profiles[profileIndex][key] = value;
+		}
 	});
 
 	if (profileType === "jobFillProfile") {
