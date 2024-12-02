@@ -126,7 +126,7 @@ function saveProfileData(profileId, profileType) {
 		profileData[key] = value;
 	});
 
-	profiles[profileIndex][profileType] = profileData;
+	profiles[profileIndex]["profileData"] = profileData;
 	if (profileType === "jobFillProfile") {
 		var jobProfileNameValue = document.getElementById(
 			`profileName_${profileId}`
@@ -183,6 +183,9 @@ function saveCustomFields(profileId) {
 	}
 
 	profiles[profileIndex].customFields = customFields;
+	customFields.forEach(field => {
+		profiles[profileIndex]["profileData"][field.name] = fieldValue;
+	});
 	chrome.storage.sync.set({ profiles: profiles }, function () {
 		console.log(`Custom fields saved for profile ${profileId}`);
 	});

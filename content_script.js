@@ -224,7 +224,6 @@ const removePopupAction = () => {
 async function getAIOpinion(input, profile) {
   return new Promise((resolve) => {
     chrome.runtime.sendMessage({ type: "QUERRY", message: input.outerHTML, profile: profile}, (response) => {
-      console.log("Response from background:", response);
       resolve(response.reply);
     });
   });
@@ -249,8 +248,6 @@ function initAutoFillVals () {
 }
 
 function autofill(profile) {
-	console.log("autofillvals: ", autoFillVals);
-	console.log(autofillInputs);
 	for (let key of autofillInputs.keys()) {
 		if (autofillInputs[key].value === '' && autoFillVals[profile.id][key]) {
 			autofillInputs[key].value = autoFillVals[profile.id][key];
@@ -259,7 +256,6 @@ function autofill(profile) {
 }
 
 autofillInputs.forEach((input) => {
-  console.log(input);
   input.addEventListener('click', () => {
     // Remove any existing popup-action before showing a new one
     removePopupAction();
