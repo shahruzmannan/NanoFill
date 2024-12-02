@@ -106,29 +106,35 @@ async function getAIOpinion(input) {
   });
 }
 
-// The list of labels that Nano is allowed to output
-// TODO: generate this automatically from profile data
-valid_responses = "address, city, country, email, firstName, gender, lastName"
-
-chrome.runtime.sendMessage({ type: "UPDATE", message: valid_responses}, (response) => {
-  console.log("Response from background:", response);
-});
-
 // Add event listeners for detecting clicks on autofill fields and get the AI's opinion on them
 const autofillInputs = detectAutofillFields();
 let aiSuggestions = {};
 
-autofillInputs.forEach((input) => {
-  getAIOpinion(input).then(aiOpinion => {
-    // TODO: add proper management of the active profile and move this segment to a more appropriate section once one exists
-    chrome.storage.sync.get(['profiles'], function(data) {
-      const profiles = data.profiles || [];
-      const currentProfile = profiles[0]
-      input.value = currentProfile.jobFillProfile[aiOpinion.split(':', 1)];
-      console.log(currentProfile);
+function autofill(profile) {
+  chrome.storage.sync.set({'active_profile': profile}) // TEMP LINE, REMOVE THIS ONCE IT EXISTS ELSEWHERE
+  autofillInputs.forEach(input => {
+    getAIOpinion(input).then(aiOpinion => {
+      input.value = profile[aiOpinion.split(':', 1)];
     });
-    // TODO: end of segment
   });
+}
+
+//begin debug section
+chrome.storage.sync.set({"active_profile": {
+    "first-name": "Simon",
+    "last-name": "Chess",
+    "personal-email": "simon@xvade.com",
+    "uw-email": "sgvtc@uw.edu"
+  }
+});
+chrome.storage.sync.get(['profiles']).then(profiles => {
+  autofill(profiles[0]);
+})
+
+//end debug section
+
+
+autofillInputs.forEach((input) => {
   console.log(input);
   input.addEventListener('click', () => {
     // Remove any existing popup-action before showing a new one
