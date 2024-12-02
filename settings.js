@@ -122,18 +122,10 @@ function saveProfileData(profileId, profileType) {
 	}
 
 	var formData = new FormData(formElement);
-	var flattenedProfileData = {};
 
-	// Add form fields to the flat object
 	formData.forEach((value, key) => {
-		flattenedProfileData[key] = value;
+		profiles[profileIndex].profileData[key] = value;
 	});
-
-	// Merge new data into the existing profile, flattening it
-	profiles[profileIndex] = {
-		...profiles[profileIndex],
-		...flattenedProfileData,
-	};
 
 	if (profileType === "jobFillProfile") {
 		var jobProfileNameValue = document.getElementById(
@@ -198,14 +190,17 @@ function saveCustomFields(profileId) {
 	// Clear all existing custom fields and flat fields
 	var currentProfile = profiles[profileIndex];
 	currentProfile.customFields.forEach((field) => {
-		if (field.name in currentProfile) {
-			delete currentProfile[field.name];
+		if (field.name in currentProfile.profileData) {
+			delete currentProfile.profileData[field.name];
 		}
 	});
 
+	if (!currentProfile.profileData) {
+		currentProfile.profileData = {};
+	}
 	// Add new custom fields to the profile object
 	newCustomFields.forEach((field) => {
-		currentProfile[field.name] = field.value; // Flat field
+		currentProfile.profileData[field.name] = field.value; // Flat field
 	});
 
 	// Update the customFields array
@@ -740,8 +735,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 						// Remove individual flat field from profile object
 						var fieldName = nameInput.value.trim(); // Get the field name
-						if (fieldName in profile) {
-							delete profile[fieldName];
+						if (fieldName in profile.profileData) {
+							delete profile.profileData[fieldName];
 						}
 
 						// Update in storage
