@@ -11,8 +11,7 @@ async function runPrompt(prompt, params) {
 }
 
 function getFieldsFromProfile(profile) {
-    console.log(profile);
-    let out = Object.entries(profile).map(([k, v]) => k);
+    let out = Object.entries(profile.jobFillProfile).map(([k, v]) => k);
     return out.join(", ");
 }
 
@@ -27,29 +26,28 @@ let params = {
 // Listen for requests from the main script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("Message received from content script:", message);
-    chrome.storage.sync.get("active_profile").then(profile => {
-        const fields = getFieldsFromProfile(profile);
-        if (fields) {
-            sysPrompt = sysPromptTemplate.replace("%valid types%", fields);
-            params.systemPrompt = sysPrompt;
-            console.log("SysPrompt:", sysPrompt);
-            try {
-                runPrompt(message.message, params).then(result => {
-                    console.log(result);
-                    sendResponse({reply: result});
-                }).catch(error => {
-                    console.log(error);
-                    sendResponse({reply: "error: " + error});
-                });
-            } catch (error) {
+    const profile = message.profile;
+    console.log("profile: ", profile);
+    const fields = getFieldsFromProfile(profile);
+    if (fields) {
+        sysPrompt = sysPromptTemplate.replace("%valid types%", fields);
+        params.systemPrompt = sysPrompt;
+        console.log("SysPrompt:", sysPrompt);
+        try {
+            runPrompt(message.message, params).then(result => {
+                console.log(result);
+                sendResponse({reply: result});
+            }).catch(error => {
                 console.log(error);
                 sendResponse({reply: "error: " + error});
-            }
-        } else {
-            console.log("Profile was empty, returned nothing.")
-            sendResponse({});
+            });
+        } catch (error) {
+            console.log(error);
+            sendResponse({reply: "error: " + error});
         }
-
-    });
+    } else {
+        console.log("Profile was empty, returned nothing.")
+        sendResponse({});
+    }
     return true; // Keep the messaging channel open for asynchronous sendResponse
 });

@@ -150,8 +150,8 @@ const createPopupAction = (input) => {
 			chrome.storage.sync.get(["profile"], function (data) {
 				profile = data.profile;
 				console.log(`${profile.name} applied`);
+				autofill(profile);
 			});
-			// TODO: AI STUFF
 		});
 
 		const dropdownContentElement =
@@ -221,9 +221,9 @@ const removePopupAction = () => {
 };
 
 // Asks the background (nano_util.js) for the AI's opinion on the input
-async function getAIOpinion(input) {
+async function getAIOpinion(input, profile) {
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage({ type: "QUERRY", message: input.outerHTML}, (response) => {
+    chrome.runtime.sendMessage({ type: "QUERRY", message: input.outerHTML, profile: profile}, (response) => {
       console.log("Response from background:", response);
       resolve(response.reply);
     });
@@ -232,14 +232,30 @@ async function getAIOpinion(input) {
 
 // Add event listeners for detecting clicks on autofill fields and get the AI's opinion on them
 const autofillInputs = detectAutofillFields();
-let aiSuggestions = {};
+let autoFillVals = {};
+function initAutoFillVals () {
+	chrome.storage.sync.get("profiles").then((profiles) => {
+		for (let profile of profiles.profiles) {
+			autoFillVals[profile.id] = []
+			for (let field of autofillInputs.keys()) {
+				getAIOpinion(autofillInputs[field], profile).then(aiOpinion => {
+					if (aiOpinion) {
+						autoFillVals[profile.id][field] = profile.jobFillProfile[aiOpinion.split(':', 1)];
+					}
+				});
+			}
+		}
+	});
+}
 
 function autofill(profile) {
-  autofillInputs.forEach(input => {
-    getAIOpinion(input).then(aiOpinion => {
-      input.value = profile[aiOpinion.split(':', 1)];
-    });
-  });
+	console.log("autofillvals: ", autoFillVals);
+	console.log(autofillInputs);
+	for (let key of autofillInputs.keys()) {
+		if (autofillInputs[key].value === '' && autoFillVals[profile.id][key]) {
+			autofillInputs[key].value = autoFillVals[profile.id][key];
+		}
+	}
 }
 
 autofillInputs.forEach((input) => {
@@ -252,6 +268,8 @@ autofillInputs.forEach((input) => {
 		createPopupAction(input);
 	});
 });
+
+initAutoFillVals();
 
 // Optional: You can handle popup-action button clicks here
 document.body.addEventListener("click", (event) => {
