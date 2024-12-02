@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			header.innerHTML = details;
 			listItem.appendChild(header);
 
-			const applyButton = document.createElement("button"); // TODO: buttons should do something
+			const applyButton = document.createElement("button");
 			applyButton.textContent = "Apply";
 			applyButton.type = "button";
 

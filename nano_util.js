@@ -11,7 +11,8 @@ async function runPrompt(prompt, params) {
 }
 
 function getFieldsFromProfile(profile) {
-    let out = Object.entries(profile.jobFillProfile).map(([k, v]) => k);
+    let out = [];
+    Object.entries(profile.profileData).map(([k, v]) => out.push(k));
     return out.join(", ");
 }
 
