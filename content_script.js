@@ -239,6 +239,8 @@ function initAutoFillVals () {
 			for (let field of autofillInputs.keys()) {
 				getAIOpinion(autofillInputs[field], profile).then(aiOpinion => {
 					if (aiOpinion) {
+						console.log(profile);
+						console.log(aiOpinion);
 						autoFillVals[profile.id][field] = profile.profileData[aiOpinion.split(':', 1)];
 					}
 				});
@@ -253,6 +255,8 @@ function autofill(profile) {
 		// console.log(profile);
 		// console.log(autoFillVals[profile.id]);
 		// console.log(autoFillVals[profile.id][key]);
+		console.log(autoFillVals);
+		console.log(profile);
 		if (autofillInputs[key].value === '' && autoFillVals[profile.id][key]) {
 			autofillInputs[key].value = autoFillVals[profile.id][key];
 		}

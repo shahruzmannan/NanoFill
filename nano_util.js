@@ -1,12 +1,22 @@
 async function runPrompt(prompt, params) {
 	try {
 		const session = await chrome.aiOriginTrial.languageModel.create(params);
-		return session.prompt(prompt);
+		const result = session.prompt(prompt);
+		console.log(result);
+		return result;
 	} catch (e) {
-		console.log("Prompt failed");
-		console.error(e);
-		console.log("Prompt:", prompt);
-		throw e;
+		chrome.aiOriginTrial.languageModel.capabilities().then((capabilities) => {
+			console.log(capabilities);
+			if (capabilities.available === "after-download") {
+				console.log("waiting on download")
+				return false;
+			} else {
+				console.log("Prompt failed");
+				console.error(e);
+				console.log("Prompt:", prompt);
+				throw e;
+			}
+		});
 	}
 }
 
@@ -25,6 +35,14 @@ let params = {
 	topK: 2,
 };
 
+
+// Trigger the model download immediately.
+chrome.aiOriginTrial.languageModel.create().then(() => {
+	console.log("Model already available.");
+}).catch(() => {
+	console.log("Download started.")
+});
+
 // Listen for requests from the main script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message.type === "QUERY") {
@@ -35,12 +53,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		if (fields) {
 			sysPrompt = sysPromptTemplate.replace("%valid types%", fields);
 			params.systemPrompt = sysPrompt;
-			console.log("SysPrompt:", sysPrompt);
 			try {
 				runPrompt(message.message, params)
 					.then((result) => {
-						console.log(result);
-						sendResponse({reply: result});
+						if (result !== false) {
+							console.log(result);
+							sendResponse({reply: result});
+						} else {
+							sendResponse({reply: "please try again after model download completes"});
+						}
 					})
 					.catch((error) => {
 						console.log(error);
