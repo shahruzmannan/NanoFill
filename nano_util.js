@@ -27,37 +27,56 @@ let params = {
 
 // Listen for requests from the main script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	console.log("Message received from content script:", message);
-	const profile = message.profile;
-	console.log("profile: ", profile);
-	const fields = getFieldsFromProfile(profile);
-	if (fields) {
-		sysPrompt = sysPromptTemplate.replace("%valid types%", fields);
-		params.systemPrompt = sysPrompt;
-		console.log("SysPrompt:", sysPrompt);
-		try {
-			runPrompt(message.message, params)
-				.then((result) => {
-					console.log(result);
-					sendResponse({ reply: result });
-				})
-				.catch((error) => {
-					console.log(error);
-					sendResponse({ reply: "error: " + error });
-				});
-		} catch (error) {
-			console.log(error);
-			sendResponse({ reply: "error: " + error });
+	if (message.type === "QUERY") {
+		console.log("Message received from content script:", message);
+		const profile = message.profile;
+		console.log("profile: ", profile);
+		const fields = getFieldsFromProfile(profile);
+		if (fields) {
+			sysPrompt = sysPromptTemplate.replace("%valid types%", fields);
+			params.systemPrompt = sysPrompt;
+			console.log("SysPrompt:", sysPrompt);
+			try {
+				runPrompt(message.message, params)
+					.then((result) => {
+						console.log(result);
+						sendResponse({reply: result});
+					})
+					.catch((error) => {
+						console.log(error);
+						sendResponse({reply: "error: " + error});
+					});
+			} catch (error) {
+				console.log(error);
+				sendResponse({reply: "error: " + error});
+			}
+		} else {
+			console.log("Profile was empty, returned nothing.");
+			sendResponse({});
 		}
-	} else {
-		console.log("Profile was empty, returned nothing.");
-		sendResponse({});
+	} else if (message.action === "openSettingsPage") {
+		chrome.tabs.create({ url: chrome.runtime.getURL("settings.html") });
 	}
 	return true; // Keep the messaging channel open for asynchronous sendResponse
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	if (message.action === "openSettingsPage") {
-		chrome.tabs.create({ url: chrome.runtime.getURL("settings.html") });
+chrome.runtime.onConnect.addListener(function (port) {
+	if (port.name === "popup") {
+		popupPort = port;
+
+		port.onMessage.addListener(function (msg) {
+			if (msg.action === "forward") {
+				// Handle messages from popup script
+				chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+					if (tabs.length > 0) {
+						chrome.tabs.sendMessage(tabs[0].id, msg.data);
+					}
+				});
+			}
+		});
+
+		port.onDisconnect.addListener(function () {
+			popupPort = null;
+		});
 	}
 });

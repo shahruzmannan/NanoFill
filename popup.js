@@ -6,6 +6,8 @@ function off() {
 	document.getElementById("info-overlay").style.display = "none";
 }
 
+const port = chrome.runtime.connect({ name: "popup" });
+
 document.addEventListener("DOMContentLoaded", () => {
 	const profileList = document.getElementById("profile-list");
 
@@ -49,12 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
 				chrome.storage.sync.set({ profile: profile }, function () {
 					console.log(`Profile ${profile.name} selected`);
 				});
-				// Toast
-				var x = document.getElementById("snackbar");
-				x.className = "show";
-				setTimeout(function () {
-					x.className = x.className.replace("show", "");
-				}, 3000);
+				port.postMessage({ action: "forward", data: {action: "autofill", profile: profile} });
+				console.log("asked for autofill")
 			});
 
 			applyButton.className = "apply-button";

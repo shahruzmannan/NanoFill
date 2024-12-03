@@ -223,7 +223,7 @@ const removePopupAction = () => {
 // Asks the background (nano_util.js) for the AI's opinion on the input
 async function getAIOpinion(input, profile) {
   return new Promise((resolve) => {
-    chrome.runtime.sendMessage({ type: "QUERRY", message: input.outerHTML, profile: profile}, (response) => {
+    chrome.runtime.sendMessage({ type: "QUERY", message: input.outerHTML, profile: profile}, (response) => {
       resolve(response.reply);
     });
   });
@@ -270,6 +270,16 @@ autofillInputs.forEach((input) => {
 });
 
 initAutoFillVals();
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	console.log("Message received in content script:", message);
+	if (message.action === "autofill") {
+		console.log("recieved autofill message")
+		autofill(message.profile);
+		sendResponse({reply: "successfully autofilled"});
+	}
+	return true;
+});
 
 // Optional: You can handle popup-action button clicks here
 document.body.addEventListener("click", (event) => {
