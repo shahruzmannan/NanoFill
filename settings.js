@@ -1,5 +1,4 @@
 var profiles = []; // Define profiles in the global scope
-
 function addProfileTab(profile, index) {
 	var tab = document.createElement("button");
 	tab.className = "profile-tab";
@@ -124,7 +123,7 @@ function saveProfileData(profileId, profileType) {
 	var formData = new FormData(formElement);
 
 	formData.forEach((value, key) => {
-		if (key !== "profileDescription" && key !== "profileName") {
+		if (key !== "name" && key !== "description") {
 			profiles[profileIndex].profileData[key] = value;
 		} else {
 			profiles[profileIndex][key] = value;
@@ -199,9 +198,6 @@ function saveCustomFields(profileId) {
 		}
 	});
 
-	if (!currentProfile.profileData) {
-		currentProfile.profileData = {};
-	}
 	// Add new custom fields to the profile object
 	newCustomFields.forEach((field) => {
 		currentProfile.profileData[field.name] = field.value; // Flat field
@@ -239,10 +235,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 		var newProfile = {
 			id: "profile_" + Date.now(),
 			name: "New Profile",
-			jobFillProfile: {},
-			educationProfile: {},
-			workExperienceProfile: {},
-			otherProfile: {},
+			profileData: {},
+			// jobFillProfile: {},
+			// educationProfile: {},
+			// workExperienceProfile: {},
+			// otherProfile: {},
 			customFields: [],
 		};
 		addProfileTab(newProfile, profiles.length);
@@ -260,10 +257,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 		var newProfile = {
 			id: "profile_" + Date.now(),
 			name: "New Profile",
-			jobFillProfile: {},
-			educationProfile: {},
-			workExperienceProfile: {},
-			otherProfile: {},
+			profileData: {},
+			// jobFillProfile: {},
+			// educationProfile: {},
+			// workExperienceProfile: {},
+			// otherProfile: {},
 			customFields: [],
 		};
 		addProfileTab(newProfile, profiles.length);
@@ -365,9 +363,9 @@ document.addEventListener("DOMContentLoaded", async function () {
       <form class="personal-info-form" id="jobFillProfileForm_${profile.id}">
         <div class="profile-name">
           <label for="profileName_${profile.id}">Profile Name</label>
-          <input type="text" id="profileName_${
+          <input type="text" maxlength="32" id="profileName_${
 						profile.id
-					}" name="profileName" value="${profile.name}">
+					}" name="name" value="${profile.name}">
         </div>
         <div class="profile-description">
           <label for="profileDescription_${
@@ -375,7 +373,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 					}">Profile Description</label>
           <textarea maxlength="200" id="profileDescription_${
 						profile.id
-					}" name="profileDescription">${profile.description || ""}</textarea>
+					}" name="description">${profile.description || ""}</textarea>
         </div>
         <div class="profile-prefix">
           <label for="prefix_${profile.id}">Prefix</label>
@@ -396,64 +394,60 @@ document.addEventListener("DOMContentLoaded", async function () {
           <label for="firstName_${profile.id}">First Name</label>
           <input type="text" id="firstName_${
 						profile.id
-					}" name="firstName" value="${profile.jobFillProfile.firstName || ""}">
+					}" name="firstName" value="${profile.profileData.firstName || ""}">
         </div>
         <div class="profile-middle-name">
           <label for="middleName_${profile.id}">Middle Name</label>
           <input type="text" id="middleName_${
 						profile.id
-					}" name="middleName" value="${
-			profile.jobFillProfile.middleName || ""
-		}">
+					}" name="middleName" value="${profile.profileData.middleName || ""}">
         </div>
         <div class="profile-last-name">
           <label for="lastName_${profile.id}">Last Name</label>
           <input type="text" id="lastName_${
 						profile.id
-					}" name="lastName" value="${profile.jobFillProfile.lastName || ""}">
+					}" name="lastName" value="${profile.profileData.lastName || ""}">
         </div>
         <div class="profile-address">
           <label for="address_${profile.id}">Address</label>
           <input type="text" id="address_${profile.id}" name="address" value="${
-			profile.jobFillProfile.address || ""
+			profile.profileData.address || ""
 		}">
         </div>
         <div class="profile-city">
           <label for="city_${profile.id}">City</label>
           <input type="text" id="city_${profile.id}" name="city" value="${
-			profile.jobFillProfile.city || ""
+			profile.profileData.city || ""
 		}">
         </div>
         <div class="profile-state">
           <label for="state_${profile.id}">State</label>
           <input type="text" id="state_${profile.id}" name="state" value="${
-			profile.jobFillProfile.state || ""
+			profile.profileData.state || ""
 		}">
         </div>
         <div class="profile-postal-code">
           <label for="postalCode_${profile.id}">Postal Code</label>
           <input type="text" id="postalCode_${
 						profile.id
-					}" name="postalCode" value="${
-			profile.jobFillProfile.postalCode || ""
-		}">
+					}" name="postalCode" value="${profile.profileData.postalCode || ""}">
         </div>
         <div class="profile-country">
           <label for="country_${profile.id}">Country</label>
           <input type="text" id="country_${profile.id}" name="country" value="${
-			profile.jobFillProfile.country || ""
+			profile.profileData.country || ""
 		}">
         </div>
         <div class="profile-email">
           <label for="email_${profile.id}">Email</label>
           <input type="email" id="email_${profile.id}" name="email" value="${
-			profile.jobFillProfile.email || ""
+			profile.profileData.email || ""
 		}">
         </div>
         <div class="profile-phone">
           <label for="phone_${profile.id}">Phone</label>
           <input type="tel" id="phone_${profile.id}" name="phone" value="${
-			profile.jobFillProfile.phone || ""
+			profile.profileData.phone || ""
 		}">
         </div>
         <div class="profile-nationality">
@@ -461,37 +455,37 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="nationality_${
 						profile.id
 					}" name="nationality" value="${
-			profile.jobFillProfile.nationality || ""
+			profile.profileData.nationality || ""
 		}">
         </div>
         <div class="profile-linkedin">
           <label for="linkedin_${profile.id}">LinkedIn</label>
           <input type="url" id="linkedin_${
 						profile.id
-					}" name="linkedin" value="${profile.jobFillProfile.linkedin || ""}">
+					}" name="linkedin" value="${profile.profileData.linkedin || ""}">
         </div>
         <div class="profile-twitter">
           <label for="twitter_${profile.id}">Twitter</label>
           <input type="url" id="twitter_${profile.id}" name="twitter" value="${
-			profile.jobFillProfile.twitter || ""
+			profile.profileData.twitter || ""
 		}">
         </div>
         <div class="profile-github">
           <label for="github_${profile.id}">GitHub</label>
           <input type="url" id="github_${profile.id}" name="github" value="${
-			profile.jobFillProfile.github || ""
+			profile.profileData.github || ""
 		}">
         </div>
         <div class="profile-website">
           <label for="website_${profile.id}">Website</label>
           <input type="url" id="website_${profile.id}" name="website" value="${
-			profile.jobFillProfile.website || ""
+			profile.profileData.website || ""
 		}">
         </div>
         <div class="profile-gender">
           <label for="gender_${profile.id}">Gender</label>
           <input type="text" id="gender_${profile.id}" name="gender" value="${
-			profile.jobFillProfile.gender || ""
+			profile.profileData.gender || ""
 		}">
         </div>
         <button class="submit-btn" type="submit" id="saveSettings_${
@@ -504,33 +498,31 @@ document.addEventListener("DOMContentLoaded", async function () {
         <div class="profile-school">
           <label for="school_${profile.id}">School or Institution</label>
           <input type="text" id="school_${profile.id}" name="school" value="${
-			profile.educationProfile.school || ""
+			profile.profileData.school || ""
 		}">
         </div>
         <div class="profile-degree">
           <label for="degree_${profile.id}">Degree</label>
           <input type="text" id="degree_${profile.id}" name="degree" value="${
-			profile.educationProfile.degree || ""
+			profile.profileData.degree || ""
 		}">
         </div>
         <div class="profile-major">
           <label for="major_${profile.id}">Major</label>
           <input type="text" id="major_${profile.id}" name="major" value="${
-			profile.educationProfile.major || ""
+			profile.profileData.major || ""
 		}">
         </div>
         <div class="profile-school-start">
           <label for="startDate_${profile.id}">Start Date</label>
           <input type="date" id="startDate_${
 						profile.id
-					}" name="startDate" value="${
-			profile.educationProfile.startDate || ""
-		}">
+					}" name="startDate" value="${profile.profileData.startDate || ""}">
         </div>
         <div class="profile-school-end">
           <label for="endDate_${profile.id}">End Date</label>
           <input type="date" id="endDate_${profile.id}" name="endDate" value="${
-			profile.educationProfile.endDate || ""
+			profile.profileData.endDate || ""
 		}">
         </div>
         <button class="submit-btn" type="submit" id="saveEducation_${
@@ -543,23 +535,21 @@ document.addEventListener("DOMContentLoaded", async function () {
         <div class="profile-company">
           <label for="company_${profile.id}">Company</label>
           <input type="text" id="company_${profile.id}" name="company" value="${
-			profile.workExperienceProfile.company || ""
+			profile.profileData.company || ""
 		}">
         </div>
         <div class="profile-job-title">
           <label for="jobTitle_${profile.id}">Job Title</label>
           <input type="text" id="jobTitle_${
 						profile.id
-					}" name="jobTitle" value="${
-			profile.workExperienceProfile.jobTitle || ""
-		}">
+					}" name="jobTitle" value="${profile.profileData.jobTitle || ""}">
         </div>
         <div class="profile-work-start">
           <label for="workStartDate_${profile.id}">Start Date</label>
           <input type="date" id="workStartDate_${
 						profile.id
 					}" name="workStartDate" value="${
-			profile.workExperienceProfile.workStartDate || ""
+			profile.profileData.workStartDate || ""
 		}">
         </div>
         <div class="profile-work-end">
@@ -567,13 +557,13 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="date" id="workEndDate_${
 						profile.id
 					}" name="workEndDate" value="${
-			profile.workExperienceProfile.workEndDate || ""
+			profile.profileData.workEndDate || ""
 		}">
         </div>
         <div class="profile-work-description">
           <label for="description_${profile.id}">Description</label>
-          <textarea id="description_${profile.id}" name="description">${
-			profile.workExperienceProfile.description || ""
+          <textarea id="description_${profile.id}" name="workDescription">${
+			profile.profileData.workDescription || ""
 		}</textarea>
         </div>
         <button class="submit-btn" type="submit" id="saveWorkExperience_${
@@ -588,7 +578,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="currentSalary_${
 						profile.id
 					}" name="currentSalary" value="${
-			profile.otherProfile.currentSalary || ""
+			profile.profileData.currentSalary || ""
 		}">
         </div>
         <div class="profile-expected-salary">
@@ -596,7 +586,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="expectedSalary_${
 						profile.id
 					}" name="expectedSalary" value="${
-			profile.otherProfile.expectedSalary || ""
+			profile.profileData.expectedSalary || ""
 		}">
         </div>
         <div class="profile-notice-period">
@@ -604,7 +594,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="noticePeriod_${
 						profile.id
 					}" name="noticePeriod" value="${
-			profile.otherProfile.noticePeriod || ""
+			profile.profileData.noticePeriod || ""
 		}">
         </div>
         <div class="profile-other-start">
@@ -614,7 +604,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="date" id="earliestAvailableDate_${
 						profile.id
 					}" name="earliestAvailableDate" value="${
-			profile.otherProfile.earliestAvailableDate || ""
+			profile.profileData.earliestAvailableDate || ""
 		}">
         </div>
         <div class="profile-cover-letter">
@@ -622,7 +612,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <textarea id="coverLetter_${
 						profile.id
 					}" name="coverLetter" rows="10">${
-			profile.otherProfile.coverLetter || ""
+			profile.profileData.coverLetter || ""
 		}</textarea>
         </div>
         <div class="profile-gender-identity">
@@ -630,7 +620,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="genderIdentity_${
 						profile.id
 					}" name="genderIdentity" value="${
-			profile.otherProfile.genderIdentity || ""
+			profile.profileData.genderIdentity || ""
 		}">
         </div>
         <div class="profile-ethnicity">
@@ -638,7 +628,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="raceEthnicity_${
 						profile.id
 					}" name="raceEthnicity" value="${
-			profile.otherProfile.raceEthnicity || ""
+			profile.profileData.raceEthnicity || ""
 		}">
         </div>
         <div class="profile-orientation">
@@ -648,7 +638,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="sexualOrientation_${
 						profile.id
 					}" name="sexualOrientation" value="${
-			profile.otherProfile.sexualOrientation || ""
+			profile.profileData.sexualOrientation || ""
 		}">
         </div>
         <div class="profile-disability">
@@ -656,7 +646,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="disabilityStatus_${
 						profile.id
 					}" name="disabilityStatus" value="${
-			profile.otherProfile.disabilityStatus || ""
+			profile.profileData.disabilityStatus || ""
 		}">
         </div>
         <div class="profile-veteran-status">
@@ -664,7 +654,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           <input type="text" id="veteranStatus_${
 						profile.id
 					}" name="veteranStatus" value="${
-			profile.otherProfile.veteranStatus || ""
+			profile.profileData.veteranStatus || ""
 		}">
         </div>
         <div class="profile-resume">
@@ -881,48 +871,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 					});
 					profiles = updatedProfiles;
 
+					chrome.storage.sync.get(["profile"], function (data) {
+						const selectedProfile = data.profile;
+						if (selectedProfile.id === profile.id) {
+							chrome.storage.sync.set({ profile: profiles[0] });
+						}
+					});
+
 					closeProfile();
 				}
 			});
 		}
-
-		// Add event listener to save profile name and description
-		const profileNameInput = document.getElementById(
-			`profileName_${profile.id}`
-		);
-		profileNameInput.addEventListener("blur", function () {
-			profile.name = profileNameInput.value;
-			chrome.storage.sync.set({ profiles: profiles }, function () {
-				console.log(`Profile name updated to ${profile.name}`);
-				// Update the profile tab text
-				const profileTab = document.querySelector(
-					`.profile-tab[data-profile="${profile.id}"]`
-				);
-				if (profileTab) {
-					profileTab.querySelector(".profile-tab-text").textContent =
-						profile.name;
-				}
-			});
-		});
-		profileNameInput.addEventListener("keypress", function (event) {
-			if (event.key === "Enter") {
-				profileNameInput.blur();
-			}
-		});
-
-		const profileDescriptionInput = document.getElementById(
-			`profileDescription_${profile.id}`
-		);
-		profileDescriptionInput.addEventListener("blur", function () {
-			profile.description = profileDescriptionInput.value;
-			chrome.storage.sync.set({ profiles: profiles }, function () {
-				console.log(`Profile description updated to ${profile.description}`);
-			});
-		});
-		profileDescriptionInput.addEventListener("keypress", function (event) {
-			if (event.key === "Enter") {
-				profileDescriptionInput.blur();
-			}
-		});
 	}
 });
