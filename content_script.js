@@ -239,7 +239,7 @@ function initAutoFillVals () {
 			for (let field of autofillInputs.keys()) {
 				getAIOpinion(autofillInputs[field], profile).then(aiOpinion => {
 					if (aiOpinion) {
-						autoFillVals[profile.id][field] = profile.jobFillProfile[aiOpinion.split(':', 1)];
+						autoFillVals[profile.id][field] = profile.profileData[aiOpinion.split(':', 1)];
 					}
 				});
 			}
@@ -249,6 +249,10 @@ function initAutoFillVals () {
 
 function autofill(profile) {
 	for (let key of autofillInputs.keys()) {
+		// console.log(autoFillVals);
+		// console.log(profile);
+		// console.log(autoFillVals[profile.id]);
+		// console.log(autoFillVals[profile.id][key]);
 		if (autofillInputs[key].value === '' && autoFillVals[profile.id][key]) {
 			autofillInputs[key].value = autoFillVals[profile.id][key];
 		}
