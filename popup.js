@@ -22,22 +22,30 @@ document.addEventListener("DOMContentLoaded", () => {
 			// Header Row: Profile Name, Apply Button, and Delete Button
 			const profileIcon = document.createElement("div");
 			profileIcon.className = "profile-icon";
-			profileIcon.textContent = `${profile.name[0]}`;
+			profileIcon.textContent = `${profile.name[0].toUpperCase()}`;
 			listItem.appendChild(profileIcon);
 
 			const header = document.createElement("div");
 			header.className = "profile-info-container";
 
+			const profileNameText = profile.name.substring(0, 15);
+			const profileNameExtension = profile.name.length >= 15 ? " ..." : "";
+			const profileDescText = profile.description?.substring(0, 53);
+			const profileDescExtension =
+				profile.description?.length >= 53 ? " ..." : "";
+
+			console.log(profileNameText, profileDescText);
 			const details =
-				!profile.description || profile.description?.length < 42
+				(!profile.description || profile.description?.length < 53) &&
+				profile.name < 20
 					? `
 			  <span class="profile-name"> ${profile.name}</span>
 			  <span class="profile-description"> ${profile.description || ""}</span>
 			`
 					: `
-				<span class="profile-name"> ${profile.name}</span>
+				<span class="profile-name"> ${profileNameText + profileNameExtension}</span>
 				<span class="profile-description"> ${
-					profile.description.substring(0, 42) + " ..."
+					profileDescText + profileDescExtension
 				}</span>`;
 
 			header.innerHTML = details;
@@ -51,8 +59,18 @@ document.addEventListener("DOMContentLoaded", () => {
 				chrome.storage.sync.set({ profile: profile }, function () {
 					console.log(`Profile ${profile.name} selected`);
 				});
-				port.postMessage({ action: "forward", data: {action: "autofill", profile: profile} });
-				console.log("asked for autofill")
+				port.postMessage({
+					action: "forward",
+					data: { action: "autofill", profile: profile },
+				});
+				console.log("asked for autofill");
+
+				// Toast
+				var x = document.getElementById("snackbar");
+				x.className = "show";
+				setTimeout(function () {
+					x.className = x.className.replace("show", "");
+				}, 3000);
 			});
 
 			applyButton.className = "apply-button";

@@ -23,6 +23,9 @@ body {
 .icon-button {
 	width: 50px;
 	height: 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	border-radius: 100%;
 	background-color: #e6e0e9;
 	border: none;
@@ -37,7 +40,7 @@ body {
 	margin: 15px 0;
 	padding: 10px 5px;
 	display: flex;
-	height: 60px;
+	min-height: 60px;
 	gap: 10px;
 }
 
