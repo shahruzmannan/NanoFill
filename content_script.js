@@ -62,7 +62,7 @@ const createPopupAction = (input) => {
 		popupAction.innerHTML = `
       <div class="profile-item">
         <div class="profile-icon">
-          ${profile.name[0]}
+          ${profile.name[0].toUpperCase()}
         </div>
         <div class="profile-info-container"></div>
         <button type="button" class="apply-button">
@@ -125,23 +125,31 @@ const createPopupAction = (input) => {
         </div>
       </div>
     `;
-    
-    // Append the popup-action to the body
-    document.body.appendChild(popupAction);
+
+		// Append the popup-action to the body
+		document.body.appendChild(popupAction);
 
 		const currentProfileInfo = popupAction.querySelector(
 			".profile-info-container"
 		);
+
+		const profileNameText = profile.name.substring(0, 15);
+		const profileNameExtension = profile.name.length >= 15 ? " ..." : "";
+		const profileDescText = profile.description?.substring(0, 53);
+		const profileDescExtension =
+			profile.description?.length >= 53 ? " ..." : "";
+
 		const details =
-			!profile.description || profile.description?.length < 42
+			(!profile.description || profile.description?.length < 53) &&
+			profile.name < 15
 				? `
 			  <span class="profile-name"> ${profile.name}</span>
 			  <span class="profile-description"> ${profile.description || ""}</span>
 			`
 				: `
-				<span class="profile-name"> ${profile.name}</span>
+				<span class="profile-name"> ${profileNameText + profileNameExtension}</span>
 				<span class="profile-description"> ${
-					profile.description.substring(0, 42) + " ..."
+					profileDescText + profileDescExtension
 				}</span>`;
 		currentProfileInfo.innerHTML = details;
 
@@ -167,12 +175,20 @@ const createPopupAction = (input) => {
 					console.log(`${cuProfile.name} selected`);
 				});
 				popupAction.querySelector(".profile-icon").textContent =
-					cuProfile.name[0];
-				popupAction.querySelector(".profile-name").textContent = cuProfile.name;
+					cuProfile.name[0].toUpperCase();
+
+				const profileNameText = cuProfile.name.substring(0, 15);
+				const profileNameExtension = cuProfile.name.length >= 15 ? " ..." : "";
+				const profileDescText = cuProfile.description?.substring(0, 53);
+				const profileDescExtension =
+					cuProfile.description?.length >= 53 ? " ..." : "";
+
+				popupAction.querySelector(".profile-name").textContent =
+					profileNameText + profileNameExtension;
 				var descriptionText =
-					!cuProfile.description || cuProfile.description?.length < 42
+					!cuProfile.description || cuProfile.description?.length < 53
 						? cuProfile.description || ""
-						: cuProfile.description.substring(0, 42) + " ...";
+						: profileDescText + profileDescExtension;
 				popupAction.querySelector(".profile-description").textContent =
 					descriptionText;
 			});
@@ -222,24 +238,28 @@ const removePopupAction = () => {
 
 // Asks the background (nano_util.js) for the AI's opinion on the input
 async function getAIOpinion(input, profile) {
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage({ type: "QUERY", message: input.outerHTML, profile: profile}, (response) => {
-      resolve(response.reply);
-    });
-  });
+	return new Promise((resolve) => {
+		chrome.runtime.sendMessage(
+			{ type: "QUERY", message: input.outerHTML, profile: profile },
+			(response) => {
+				resolve(response.reply);
+			}
+		);
+	});
 }
 
 // Add event listeners for detecting clicks on autofill fields and get the AI's opinion on them
 const autofillInputs = detectAutofillFields();
 let autoFillVals = {};
-function initAutoFillVals () {
+function initAutoFillVals() {
 	chrome.storage.sync.get("profiles").then((profiles) => {
 		for (let profile of profiles.profiles) {
-			autoFillVals[profile.id] = []
+			autoFillVals[profile.id] = [];
 			for (let field of autofillInputs.keys()) {
-				getAIOpinion(autofillInputs[field], profile).then(aiOpinion => {
+				getAIOpinion(autofillInputs[field], profile).then((aiOpinion) => {
 					if (aiOpinion) {
-						autoFillVals[profile.id][field] = profile.profileData[aiOpinion.split(':', 1)];
+						autoFillVals[profile.id][field] =
+							profile.profileData[aiOpinion.split(":", 1)];
 					}
 				});
 			}
@@ -253,16 +273,16 @@ function autofill(profile) {
 		// console.log(profile);
 		// console.log(autoFillVals[profile.id]);
 		// console.log(autoFillVals[profile.id][key]);
-		if (autofillInputs[key].value === '' && autoFillVals[profile.id][key]) {
+		if (autofillInputs[key].value === "" && autoFillVals[profile.id][key]) {
 			autofillInputs[key].value = autoFillVals[profile.id][key];
 		}
 	}
 }
 
 autofillInputs.forEach((input) => {
-  input.addEventListener('click', () => {
-    // Remove any existing popup-action before showing a new one
-    removePopupAction();
+	input.addEventListener("click", () => {
+		// Remove any existing popup-action before showing a new one
+		removePopupAction();
 
 		// Create and show the popup-action for this input field
 		createPopupAction(input);
@@ -274,9 +294,9 @@ initAutoFillVals();
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	console.log("Message received in content script:", message);
 	if (message.action === "autofill") {
-		console.log("recieved autofill message")
+		console.log("recieved autofill message");
 		autofill(message.profile);
-		sendResponse({reply: "successfully autofilled"});
+		sendResponse({ reply: "successfully autofilled" });
 	}
 	return true;
 });
