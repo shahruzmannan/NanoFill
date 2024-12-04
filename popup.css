@@ -123,6 +123,13 @@ body {
 	animation: fadein-top-right 0.5s, fadeout-top-right 0.5s 2.5s;
 }
 
+#create-profile-text {
+	font-size: 20px;
+	font-family: Roboto, Arial, sans-serif;
+	/*visibility: hidden;*/
+
+}
+
 /* Animations to fade the snackbar in and out */
 @-webkit-keyframes fadein-top-right {
 	from {

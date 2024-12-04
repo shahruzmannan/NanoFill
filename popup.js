@@ -15,70 +15,78 @@ document.addEventListener("DOMContentLoaded", () => {
 	chrome.storage.sync.get(["profiles"], function (data) {
 		const profiles = data.profiles || [];
 
-		profiles.forEach((profile) => {
-			const listItem = document.createElement("div");
-			listItem.className = "profile-item";
+		if (profiles.length > 0) {
+			profiles.forEach((profile) => {
+				const listItem = document.createElement("div");
+				listItem.className = "profile-item";
 
-			// Header Row: Profile Name, Apply Button, and Delete Button
-			const profileIcon = document.createElement("div");
-			profileIcon.className = "profile-icon";
-			profileIcon.textContent = `${profile.name[0].toUpperCase()}`;
-			listItem.appendChild(profileIcon);
+				// Header Row: Profile Name, Apply Button, and Delete Button
+				const profileIcon = document.createElement("div");
+				profileIcon.className = "profile-icon";
+				profileIcon.textContent = `${profile.name[0].toUpperCase()}`;
+				listItem.appendChild(profileIcon);
 
-			const header = document.createElement("div");
-			header.className = "profile-info-container";
+				const header = document.createElement("div");
+				header.className = "profile-info-container";
 
-			const profileNameText = profile.name.substring(0, 15);
-			const profileNameExtension = profile.name.length >= 15 ? " ..." : "";
-			const profileDescText = profile.description?.substring(0, 53);
-			const profileDescExtension =
-				profile.description?.length >= 53 ? " ..." : "";
+				const profileNameText = profile.name.substring(0, 15);
+				const profileNameExtension = profile.name.length >= 15 ? " ..." : "";
+				const profileDescText = profile.description?.substring(0, 53);
+				const profileDescExtension =
+					profile.description?.length >= 53 ? " ..." : "";
 
-			console.log(profileNameText, profileDescText);
-			const details =
-				(!profile.description || profile.description?.length < 53) &&
-				profile.name < 20
-					? `
+				console.log(profileNameText, profileDescText);
+				const details =
+					(!profile.description || profile.description?.length < 53) &&
+					profile.name < 20
+						? `
 			  <span class="profile-name"> ${profile.name}</span>
 			  <span class="profile-description"> ${profile.description || ""}</span>
 			`
-					: `
+						: `
 				<span class="profile-name"> ${profileNameText + profileNameExtension}</span>
 				<span class="profile-description"> ${
-					profileDescText + profileDescExtension
-				}</span>`;
+							profileDescText + profileDescExtension
+						}</span>`;
 
-			header.innerHTML = details;
-			listItem.appendChild(header);
+				header.innerHTML = details;
+				listItem.appendChild(header);
 
-			const applyButton = document.createElement("button");
-			applyButton.textContent = "Apply";
-			applyButton.type = "button";
+				const applyButton = document.createElement("button");
+				applyButton.textContent = "Apply";
+				applyButton.type = "button";
 
-			applyButton.addEventListener("click", function (event) {
-				chrome.storage.sync.set({ profile: profile }, function () {
-					console.log(`Profile ${profile.name} selected`);
+				applyButton.addEventListener("click", function (event) {
+					chrome.storage.sync.set({ profile: profile }, function () {
+						console.log(`Profile ${profile.name} selected`);
+					});
+					port.postMessage({
+						action: "forward",
+						data: { action: "autofill", profile: profile },
+					});
+					console.log("asked for autofill");
+
+					// Toast
+					var x = document.getElementById("snackbar");
+					x.className = "show";
+					setTimeout(function () {
+						x.className = x.className.replace("show", "");
+					}, 3000);
 				});
-				port.postMessage({
-					action: "forward",
-					data: { action: "autofill", profile: profile },
-				});
-				console.log("asked for autofill");
 
-				// Toast
-				var x = document.getElementById("snackbar");
-				x.className = "show";
-				setTimeout(function () {
-					x.className = x.className.replace("show", "");
-				}, 3000);
+				applyButton.className = "apply-button";
+
+				listItem.appendChild(applyButton);
+
+				profileList.appendChild(listItem);
 			});
+		} else {
+			const createProfileText = document.createElement("p");
+			createProfileText.id = "create-profile-text";
+			createProfileText.textContent = "Click on the gear to make your first profile!"
+			profileList.appendChild(createProfileText);
+		}
 
-			applyButton.className = "apply-button";
-
-			listItem.appendChild(applyButton);
-
-			profileList.appendChild(listItem);
-		});
 	});
 
 	const settingsButton = document.getElementById("settings-button");
