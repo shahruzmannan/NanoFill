@@ -29,25 +29,29 @@ document.addEventListener("DOMContentLoaded", () => {
 				const header = document.createElement("div");
 				header.className = "profile-info-container";
 
+				// Extract name and description with fallback handling
 				const profileNameText = profile.name.substring(0, 15);
 				const profileNameExtension = profile.name.length >= 15 ? " ..." : "";
-				const profileDescText = profile.description?.substring(0, 53);
+				const profileDescText = profile.description?.substring(0, 53) ?? "";
 				const profileDescExtension =
 					profile.description?.length >= 53 ? " ..." : "";
 
-				console.log(profileNameText, profileDescText);
+				// Check conditions and create details
 				const details =
 					(!profile.description || profile.description?.length < 53) &&
-					profile.name < 20
+					profile.name.length < 20
 						? `
-			  <span class="profile-name"> ${profile.name}</span>
-			  <span class="profile-description"> ${profile.description || ""}</span>
-			`
+      <span class="profile-name"> ${profile.name}</span>
+      <span class="profile-description"> ${profile.description || ""}</span>
+    `
 						: `
-				<span class="profile-name"> ${profileNameText + profileNameExtension}</span>
-				<span class="profile-description"> ${
-							profileDescText + profileDescExtension
-						}</span>`;
+      <span class="profile-name"> ${
+				profileNameText + profileNameExtension
+			}</span>
+      <span class="profile-description"> ${
+				profileDescText + profileDescExtension
+			}</span>
+    `;
 
 				header.innerHTML = details;
 				listItem.appendChild(header);
@@ -83,10 +87,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		} else {
 			const createProfileText = document.createElement("p");
 			createProfileText.id = "create-profile-text";
-			createProfileText.textContent = "Click on the gear to make your first profile!"
+			createProfileText.textContent =
+				"Click on the gear to make your first profile!";
 			profileList.appendChild(createProfileText);
 		}
-
 	});
 
 	const settingsButton = document.getElementById("settings-button");

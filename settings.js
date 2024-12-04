@@ -657,6 +657,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 					}" name="veteranStatus" value="${
 			profile.profileData.veteranStatus || ""
 		}">
+		</div>
         <button class="submit-btn other-btn" type="submit" id="saveOther_${
 					profile.id
 				}">Save</button>

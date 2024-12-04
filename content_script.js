@@ -135,7 +135,7 @@ const createPopupAction = (input) => {
 
 		const profileNameText = profile.name.substring(0, 15);
 		const profileNameExtension = profile.name.length >= 15 ? " ..." : "";
-		const profileDescText = profile.description?.substring(0, 53);
+		const profileDescText = profile.description?.substring(0, 53) ?? "";
 		const profileDescExtension =
 			profile.description?.length >= 53 ? " ..." : "";
 
@@ -179,7 +179,7 @@ const createPopupAction = (input) => {
 
 				const profileNameText = cuProfile.name.substring(0, 15);
 				const profileNameExtension = cuProfile.name.length >= 15 ? " ..." : "";
-				const profileDescText = cuProfile.description?.substring(0, 53);
+				const profileDescText = cuProfile.description?.substring(0, 53) ?? "";
 				const profileDescExtension =
 					cuProfile.description?.length >= 53 ? " ..." : "";
 
@@ -240,7 +240,7 @@ const removePopupAction = () => {
 async function getAIOpinions(inputs, profile) {
 	let outerHTMLs = [];
 	for (let input of inputs) {
-		console.log(input)
+		console.log(input);
 		outerHTMLs.push(input.outerHTML);
 	}
 	return new Promise((resolve) => {
@@ -264,7 +264,8 @@ function initAutoFillVals() {
 				console.log("aiOpinions", aiOpinions);
 				for (let opinion of aiOpinions.keys()) {
 					if (opinion) {
-						autoFillVals[profile.id][opinion] = profile.profileData[aiOpinions[opinion].split(':', 1)];
+						autoFillVals[profile.id][opinion] =
+							profile.profileData[aiOpinions[opinion].split(":", 1)];
 					}
 				}
 			});

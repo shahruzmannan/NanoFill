@@ -24,11 +24,11 @@ body {
 
 .add-profile-button {
 	background-color: #ffd8e4;
-	padding: 5px;
-	border-radius: 20%;
+	padding: 10px;
+	border-radius: 15px;
 	color: #663b48;
-	width: 50px;
-	height: 50px;
+	width: 60px;
+	height: 60px;
 	font-size: 30px;
 }
 
@@ -109,8 +109,10 @@ body {
 
 .back-btn {
 	background-color: inherit;
-	border-radius: 20%;
-	width: 50px;
+	border-radius: 15px;
+	width: 60px;
+	height: 60px;
+	/* width: 60px; */
 }
 
 .back-btn:hover {
@@ -121,11 +123,12 @@ body {
 	position: relative;
 	display: inline-block;
 	width: 60px;
+	height: 60px;
 }
 
 .dropdown-btn {
 	background-color: inherit;
-	border-radius: 20%;
+	border-radius: 15px;
 
 	color: black;
 	border: none;
@@ -302,12 +305,13 @@ body {
 .submit-btn {
 	margin: 10px 0;
 	grid-column: span 12;
-	width: 75px;
+	width: 80px;
+	height: 50px;
 	font-size: 18px;
 	background-color: #007bff;
 	color: #fff;
 	border: none;
-	border-radius: 5px;
+	border-radius: 10px;
 	cursor: pointer;
 }
 
@@ -441,6 +445,10 @@ button:hover {
 	grid-column: span 12;
 }
 
+.profile-cover-letter textarea {
+	resize: vertical;
+}
+
 .profile-gender-identity,
 .profile-ethnicity,
 .profile-orientation,
@@ -487,14 +495,13 @@ button:hover {
 }
 
 .delete-button {
-	width: 75px;
-	height: 43px;
-	padding: 10px;
+	width: 80px;
+	height: 43.2px;
 	font-size: 18px;
 	background-color: #ffd8e4;
 	color: black;
 	border: none;
-	border-radius: 5px;
+	border-radius: 10px;
 	cursor: pointer;
 	margin: 0 0 5px 0;
 }
@@ -504,14 +511,13 @@ button:hover {
 }
 
 .custom-add-btn {
-	width: 175px;
-	height: 43px;
-	padding: 10px;
+	width: 185px;
+	height: 50px;
 	font-size: 18px;
 	background-color: #ffd8e4;
 	color: black;
 	border: none;
-	border-radius: 5px;
+	border-radius: 10px;
 	cursor: pointer;
 	margin-right: 10px;
 	/* margin: 0 0 5px 0; */
