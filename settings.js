@@ -447,7 +447,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         </div>
         <div class="profile-phone">
           <label for="phone_${profile.id}">Phone</label>
-          <input type="tel" id="phone_${profile.id}" name="phone" value="${
+          <input type="number" id="phone_${profile.id}" name="phone" value="${
 			profile.profileData.phone || ""
 		}">
         </div>

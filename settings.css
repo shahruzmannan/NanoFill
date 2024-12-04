@@ -78,13 +78,13 @@ body {
 }
 
 .create-btn {
-	background-color: #ece6f0;
-	color: #65558f;
+	background-color: #65558f;
+	color: white;
 	width: auto;
 	font-family: Roboto, Arial, sans-serif;
 	font-size: 22px;
 	padding: 20px;
-	border-radius: 15px;
+	border-radius: 30px;
 	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	display: flex;
 	align-items: center;
@@ -321,7 +321,7 @@ body {
 
 input[type="text"],
 input[type="email"],
-input[type="tel"],
+input[type="number"],
 input[type="url"],
 input[type="date"],
 select,
@@ -622,4 +622,10 @@ button:hover {
 		opacity: 0;
 		transform: translateX(100%); /* Slide out to the right */
 	}
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
 }
