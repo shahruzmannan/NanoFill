@@ -378,6 +378,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         <div class="profile-prefix">
           <label for="prefix_${profile.id}">Prefix</label>
           <select id="prefix_${profile.id}" name="prefix">
+          	<option value="None">None</option>
             <option value="Mr">Mr</option>
             <option value="Mrs">Mrs</option>
             <option value="Miss">Miss</option>
@@ -656,16 +657,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 					}" name="veteranStatus" value="${
 			profile.profileData.veteranStatus || ""
 		}">
-        </div>
-        <div class="profile-resume">
-          <label for="resume_${profile.id}">Resume/CV</label>
-          <input type="file" id="resume_${
-						profile.id
-					}" name="resume" accept="application/pdf">
-          <div id="resumeStatus_${
-						profile.id
-					}"></div> <!-- Display the status of the resume -->
-        </div>
         <button class="submit-btn other-btn" type="submit" id="saveOther_${
 					profile.id
 				}">Save</button>

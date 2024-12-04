@@ -237,10 +237,15 @@ const removePopupAction = () => {
 };
 
 // Asks the background (nano_util.js) for the AI's opinion on the input
-async function getAIOpinion(input, profile) {
+async function getAIOpinions(inputs, profile) {
+	let outerHTMLs = [];
+	for (let input of inputs) {
+		console.log(input)
+		outerHTMLs.push(input.outerHTML);
+	}
 	return new Promise((resolve) => {
 		chrome.runtime.sendMessage(
-			{ type: "QUERY", message: input.outerHTML, profile: profile },
+			{ type: "QUERY", message: outerHTMLs, profile: profile },
 			(response) => {
 				resolve(response.reply);
 			}
@@ -255,14 +260,14 @@ function initAutoFillVals() {
 	chrome.storage.sync.get("profiles").then((profiles) => {
 		for (let profile of profiles.profiles) {
 			autoFillVals[profile.id] = [];
-			for (let field of autofillInputs.keys()) {
-				getAIOpinion(autofillInputs[field], profile).then((aiOpinion) => {
-					if (aiOpinion) {
-						autoFillVals[profile.id][field] =
-							profile.profileData[aiOpinion.split(":", 1)];
+			getAIOpinions(autofillInputs, profile).then((aiOpinions) => {
+				console.log("aiOpinions", aiOpinions);
+				for (let opinion of aiOpinions.keys()) {
+					if (opinion) {
+						autoFillVals[profile.id][opinion] = profile.profileData[aiOpinions[opinion].split(':', 1)];
 					}
-				});
-			}
+				}
+			});
 		}
 	});
 }

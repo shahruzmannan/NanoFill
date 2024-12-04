@@ -1,9 +1,7 @@
-async function runPrompt(prompt, params) {
+async function runPrompts(prompts, params) {
+	let session;
 	try {
-		const session = await chrome.aiOriginTrial.languageModel.create(params);
-		const result = session.prompt(prompt);
-		console.log(result);
-		return result;
+		session = await chrome.aiOriginTrial.languageModel.create(params);
 	} catch (e) {
 		chrome.aiOriginTrial.languageModel.capabilities().then((capabilities) => {
 			console.log(capabilities);
@@ -17,6 +15,13 @@ async function runPrompt(prompt, params) {
 				throw e;
 			}
 		});
+	}
+	if (session) {
+		let results = [];
+		for (let prompt of prompts) {
+			results.push(await session.prompt(prompt));
+		}
+		return Promise.all(results);
 	}
 }
 
@@ -54,10 +59,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			sysPrompt = sysPromptTemplate.replace("%valid types%", fields);
 			params.systemPrompt = sysPrompt;
 			try {
-				runPrompt(message.message, params)
+				runPrompts(message.message, params)
 					.then((result) => {
 						if (result !== false) {
-							console.log(result);
+							console.log("result from ai: ", result);
 							sendResponse({reply: result});
 						} else {
 							sendResponse({reply: "please try again after model download completes"});
