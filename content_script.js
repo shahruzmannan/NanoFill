@@ -48,18 +48,25 @@ const detectAutofillFields = () => {
 // Function to create a popup-action
 const createPopupAction = (input) => {
 	var profile = {};
-	chrome.storage.sync.get(["profile"], function (data) {
-		profile = data.profile;
-	});
 	// Fetch profiles from Chrome Storage
 	chrome.storage.sync.get(["profiles"], function (data) {
-		const profiles = data.profiles || [];
+		chrome.storage.sync.get("profile").then((profile) => {
+			profile = data.profile;
+			if (!profile) {
+				chrome.storage.sync.set({ profile: data.profiles[0] });
+				profile = data.profiles[0];
+			}
+			return [profile, data];
+		}).then((stuff) => {
+			profile = stuff[0];
+			data = stuff[1];
+			const profiles = data.profiles || [];
 
-		// Create a popup-action div
-		const popupAction = document.createElement("div");
-		popupAction.classList.add("popup-action");
-
-		popupAction.innerHTML = `
+			// Create a popup-action div
+			const popupAction = document.createElement("div");
+			popupAction.classList.add("popup-action");
+			console.log(profile);
+			popupAction.innerHTML = `
       <div class="profile-item">
         <div class="profile-icon">
           ${profile.name[0].toUpperCase()}
@@ -126,105 +133,110 @@ const createPopupAction = (input) => {
       </div>
     `;
 
-		// Append the popup-action to the body
-		document.body.appendChild(popupAction);
+			// Append the popup-action to the body
+			document.body.appendChild(popupAction);
 
-		const currentProfileInfo = popupAction.querySelector(
-			".profile-info-container"
-		);
+			const currentProfileInfo = popupAction.querySelector(
+				".profile-info-container"
+			);
 
-		const profileNameText = profile.name.substring(0, 15);
-		const profileNameExtension = profile.name.length >= 15 ? " ..." : "";
-		const profileDescText = profile.description?.substring(0, 53) ?? "";
-		const profileDescExtension =
-			profile.description?.length >= 53 ? " ..." : "";
+			const profileNameText = profile.name.substring(0, 15);
+			const profileNameExtension = profile.name.length >= 15 ? " ..." : "";
+			const profileDescText = profile.description?.substring(0, 53) ?? "";
+			const profileDescExtension =
+				profile.description?.length >= 53 ? " ..." : "";
 
-		const details =
-			(!profile.description || profile.description?.length < 53) &&
-			profile.name < 15
-				? `
+			const details =
+				(!profile.description || profile.description?.length < 53) &&
+				profile.name < 15
+					? `
 			  <span class="profile-name"> ${profile.name}</span>
 			  <span class="profile-description"> ${profile.description || ""}</span>
 			`
-				: `
+					: `
 				<span class="profile-name"> ${profileNameText + profileNameExtension}</span>
 				<span class="profile-description"> ${
-					profileDescText + profileDescExtension
-				}</span>`;
-		currentProfileInfo.innerHTML = details;
+						profileDescText + profileDescExtension
+					}</span>`;
+			currentProfileInfo.innerHTML = details;
 
-		const applyButtonElement = popupAction.querySelector(".apply-button");
-		applyButtonElement.addEventListener("click", function (event) {
-			chrome.storage.sync.get(["profile"], function (data) {
-				profile = data.profile;
-				console.log(`${profile.name} applied`);
-				autofill(profile);
-			});
-		});
-
-		const dropdownContentElement =
-			document.getElementsByClassName("dropdown-content")[0];
-
-		profiles.forEach((cuProfile) => {
-			var dropdownOption = document.createElement("button");
-			dropdownOption.id = cuProfile.id;
-			dropdownOption.className = "profile-btn";
-			dropdownOption.textContent = cuProfile.name;
-			dropdownOption.addEventListener("click", function (event) {
-				chrome.storage.sync.set({ profile: cuProfile }, function () {
-					console.log(`${cuProfile.name} selected`);
+			const applyButtonElement = popupAction.querySelector(".apply-button");
+			applyButtonElement.addEventListener("click", function (event) {
+				chrome.storage.sync.get(["profile"], function (data) {
+					profile = data.profile;
+					if (!profile) {
+						profile = profiles[0];
+					}
+					console.log(`${profile.name} applied`);
+					autofill(profile);
 				});
-				popupAction.querySelector(".profile-icon").textContent =
-					cuProfile.name[0].toUpperCase();
-
-				const profileNameText = cuProfile.name.substring(0, 15);
-				const profileNameExtension = cuProfile.name.length >= 15 ? " ..." : "";
-				const profileDescText = cuProfile.description?.substring(0, 53) ?? "";
-				const profileDescExtension =
-					cuProfile.description?.length >= 53 ? " ..." : "";
-
-				popupAction.querySelector(".profile-name").textContent =
-					profileNameText + profileNameExtension;
-				var descriptionText =
-					!cuProfile.description || cuProfile.description?.length < 53
-						? cuProfile.description || ""
-						: profileDescText + profileDescExtension;
-				popupAction.querySelector(".profile-description").textContent =
-					descriptionText;
 			});
-			dropdownContentElement.appendChild(dropdownOption);
+
+			const dropdownContentElement =
+				document.getElementsByClassName("dropdown-content")[0];
+
+			profiles.forEach((cuProfile) => {
+				var dropdownOption = document.createElement("button");
+				dropdownOption.id = cuProfile.id;
+				dropdownOption.className = "profile-btn";
+				dropdownOption.textContent = cuProfile.name;
+				dropdownOption.addEventListener("click", function (event) {
+					chrome.storage.sync.set({ profile: cuProfile }, function () {
+						console.log(`${cuProfile.name} selected`);
+					});
+					popupAction.querySelector(".profile-icon").textContent =
+						cuProfile.name[0].toUpperCase();
+
+					const profileNameText = cuProfile.name.substring(0, 15);
+					const profileNameExtension = cuProfile.name.length >= 15 ? " ..." : "";
+					const profileDescText = cuProfile.description?.substring(0, 53) ?? "";
+					const profileDescExtension =
+						cuProfile.description?.length >= 53 ? " ..." : "";
+
+					popupAction.querySelector(".profile-name").textContent =
+						profileNameText + profileNameExtension;
+					var descriptionText =
+						!cuProfile.description || cuProfile.description?.length < 53
+							? cuProfile.description || ""
+							: profileDescText + profileDescExtension;
+					popupAction.querySelector(".profile-description").textContent =
+						descriptionText;
+				});
+				dropdownContentElement.appendChild(dropdownOption);
+			});
+
+			const settingsButton = document.getElementById("settings-button");
+			settingsButton.addEventListener("click", () => {
+				chrome.runtime.sendMessage({ action: "openSettingsPage" });
+			});
+
+			// Position the popup-action near the input field
+			const inputRect = input.getBoundingClientRect();
+			const popupWidth = popupAction.offsetWidth;
+			// const popupHeight = popupAction.offsetHeight;
+
+			popupAction.style.position = "absolute";
+			popupAction.style.top = `${
+				inputRect.top + window.scrollY + inputRect.height
+			}px`; // TODO: fix positioning so that our popup moves as the site scrolls (it should be a child of the input field)
+			popupAction.style.left = `${
+				inputRect.left + window.scrollX + inputRect.width / 2 - popupWidth / 2
+			}px`; // Centered
+
+			// // Handle profile selection
+			// const profileSelect = popupAction.querySelector(".popup-action-select");
+			// profileSelect.addEventListener("change", function () {
+			// 	// TODO: I (xvade) don't think we should have the profile switcher in the popup, and regardless we shouldn't fill anything upon switching profiles
+			// 	const selectedProfileId = this.value;
+			// 	const selectedProfile = profiles.find(
+			// 		(profile) => profile.id === selectedProfileId
+			// 	);
+			// 	if (selectedProfile) {
+			// 		autofillInputFields(selectedProfile);
+			// 	}
+			// });
 		});
 
-		const settingsButton = document.getElementById("settings-button");
-		settingsButton.addEventListener("click", () => {
-			chrome.runtime.sendMessage({ action: "openSettingsPage" });
-		});
-
-		// Position the popup-action near the input field
-		const inputRect = input.getBoundingClientRect();
-		const popupWidth = popupAction.offsetWidth;
-		// const popupHeight = popupAction.offsetHeight;
-
-		popupAction.style.position = "absolute";
-		popupAction.style.top = `${
-			inputRect.top + window.scrollY + inputRect.height
-		}px`; // TODO: fix positioning so that our popup moves as the site scrolls (it should be a child of the input field)
-		popupAction.style.left = `${
-			inputRect.left + window.scrollX + inputRect.width / 2 - popupWidth / 2
-		}px`; // Centered
-
-		// // Handle profile selection
-		// const profileSelect = popupAction.querySelector(".popup-action-select");
-		// profileSelect.addEventListener("change", function () {
-		// 	// TODO: I (xvade) don't think we should have the profile switcher in the popup, and regardless we shouldn't fill anything upon switching profiles
-		// 	const selectedProfileId = this.value;
-		// 	const selectedProfile = profiles.find(
-		// 		(profile) => profile.id === selectedProfileId
-		// 	);
-		// 	if (selectedProfile) {
-		// 		autofillInputFields(selectedProfile);
-		// 	}
-		// });
 	});
 };
 

@@ -156,6 +156,12 @@ function saveProfileData(profileId, profileType) {
 	setTimeout(function () {
 		x.className = x.className.replace("show", "");
 	}, 3000);
+
+	chrome.storage.sync.get("profile").then((profile) => {
+		if (!profile) {
+			chrome.storage.sync.set({ profile: profiles[profileIndex] });
+		}
+	});
 }
 
 function saveCustomFields(profileId) {
