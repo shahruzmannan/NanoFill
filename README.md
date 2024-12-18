@@ -1,3 +1,8 @@
+## Introduction
+NanoFill was inspired by the limitations of current autofill solutions in web browsers. Chrome's built-in autofill often fails with newer input field types and lacks adaptability to evolving technologies. NanoFill provides users with a fast, secure, and offline-capable solution that prioritizes privacy while delivering a seamless user experience.
+
+NanoFill replaces Chrome's traditional autofill with a modern, AI-driven approach using Gemini Nano's on-device capabilities. It securely autofills input fields by running locally on the user's device, ensuring no sensitive information is sent to external servers. NanoFill works offline, scales effortlessly, and features a clean, intuitive interface
+
 ## Setup
 These steps assume that your Chrome is fully up to date, that PromptAPI is still supported in the same way that it was as of December 3, 2024, and that you have not used PromptAPI on this instance of your browser before.
 <ol>
